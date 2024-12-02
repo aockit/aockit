@@ -1,0 +1,39 @@
+{
+  "name": "aocjs",
+  "version": "1.0.0",
+  "description": "Advent of Code API client.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aockit/aockit.git",
+    "directory": "packages/aocjs"
+  },
+  "bugs": {
+    "url": "https://github.com/aockit/aockit/issues"
+  },
+  "homepage": "https://github.com/aockit/aockit#readme",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "aoc",
+    "adventofcode"
+  ],
+  "author": "taskylizard",
+  "license": "MIT",
+  "scripts": {
+    "build": "unbuild",
+    "prepack": "pnpm build"
+  }
+}

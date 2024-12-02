@@ -1,0 +1,51 @@
+{
+  "name": "aockit",
+  "version": "0.0.0",
+  "description": "Polyglot CLI for Advent of Code",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aockit/aockit.git",
+    "directory": "packages/kit"
+  },
+  "bugs": {
+    "url": "https://github.com/aockit/aockit/issues"
+  },
+  "homepage": "https://github.com/aockit/aockit#readme",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "aoc": "./dist/cli.mjs"
+  },
+  "scripts": {
+    "build": "unbuild",
+    "prepack": "unbuild"
+  },
+  "keywords": [
+    "aoc",
+    "adventofcode"
+  ],
+  "author": "taskylizard",
+  "license": "MIT",
+  "dependencies": {
+    "@antfu/utils": "^0.7.10",
+    "aocjs": "workspace:^",
+    "chokidar": "^4.0.1",
+    "citty": "^0.1.6",
+    "consola": "^3.2.3",
+    "dotenv": "^16.4.5",
+    "esbuild": "^0.24.0",
+    "execa": "^9.5.1",
+    "jiti": "^2.4.1",
+    "pathe": "^1.1.2",
+    "perfect-debounce": "^1.0.0",
+    "rolldown": "0.14.0"
+  }
+}
