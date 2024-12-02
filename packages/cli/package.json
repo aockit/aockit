@@ -11,6 +11,9 @@
     "url": "https://github.com/aockit/aockit/issues"
   },
   "homepage": "https://github.com/aockit/aockit#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "exports": {
     ".": {
@@ -40,12 +43,27 @@
     "chokidar": "^4.0.1",
     "citty": "^0.1.6",
     "consola": "^3.2.3",
-    "dotenv": "^16.4.5",
     "esbuild": "^0.24.0",
     "execa": "^9.5.1",
     "jiti": "^2.4.1",
     "pathe": "^1.1.2",
     "perfect-debounce": "^1.0.0",
     "rolldown": "0.14.0"
+  },
+  "peerDependencies": {
+    "rolldown": "^0.14.0",
+    "jiti": "^2.4.1",
+    "esbuild": "^0.24.0"
+  },
+  "peerDependenciesMeta": {
+    "jiti": {
+      "optional": true
+    },
+    "esbuild": {
+      "optional": true
+    },
+    "rolldown": {
+      "optional": true
+    }
   }
 }

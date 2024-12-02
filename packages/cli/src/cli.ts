@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 /* eslint-disable unicorn/prefer-top-level-await */
 import { defineCommand, runMain, type CommandDef } from "citty";
-import "dotenv/config";
 import { name, description, version } from "../package.json";
 
 const _def = (r: any) => (r.default || r) as Promise<CommandDef>;
