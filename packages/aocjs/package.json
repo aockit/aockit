@@ -1,6 +1,6 @@
 {
 	"name": "aocjs",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Advent of Code API client.",
 	"repository": {
 		"type": "git",
