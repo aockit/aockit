@@ -1,69 +1,59 @@
 {
-  "name": "@aockit/cli",
-  "version": "0.0.2",
-  "description": "Polyglot CLI for Advent of Code",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/aockit/aockit.git",
-    "directory": "packages/kit"
-  },
-  "bugs": {
-    "url": "https://github.com/aockit/aockit/issues"
-  },
-  "homepage": "https://github.com/aockit/aockit#readme",
-  "publishConfig": {
-    "access": "public"
-  },
-  "type": "module",
-  "exports": {
-    ".": {
-      "import": "./dist/index.mjs"
-    }
-  },
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "bin": {
-    "aoc": "./dist/cli.mjs"
-  },
-  "scripts": {
-    "build": "unbuild",
-    "prepack": "unbuild"
-  },
-  "keywords": [
-    "aoc",
-    "adventofcode"
-  ],
-  "author": "taskylizard",
-  "license": "MIT",
-  "dependencies": {
-    "@antfu/utils": "^0.7.10",
-    "aocjs": "workspace:^",
-    "chokidar": "^4.0.1",
-    "citty": "^0.1.6",
-    "consola": "^3.2.3",
-    "esbuild": "^0.24.0",
-    "execa": "^9.5.1",
-    "jiti": "^2.4.1",
-    "pathe": "^1.1.2",
-    "perfect-debounce": "^1.0.0",
-    "rolldown": "0.14.0"
-  },
-  "peerDependencies": {
-    "rolldown": "^0.14.0",
-    "jiti": "^2.4.1",
-    "esbuild": "^0.24.0"
-  },
-  "peerDependenciesMeta": {
-    "jiti": {
-      "optional": true
-    },
-    "esbuild": {
-      "optional": true
-    },
-    "rolldown": {
-      "optional": true
-    }
-  }
+	"name": "@aockit/cli",
+	"version": "0.0.3",
+	"description": "Polyglot CLI for Advent of Code",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/aockit/aockit.git",
+		"directory": "packages/kit"
+	},
+	"bugs": {
+		"url": "https://github.com/aockit/aockit/issues"
+	},
+	"homepage": "https://github.com/aockit/aockit#readme",
+	"publishConfig": {
+		"access": "public"
+	},
+	"type": "module",
+	"files": ["dist"],
+	"bin": {
+		"aoc": "./dist/cli.mjs"
+	},
+	"scripts": {
+		"build": "unbuild",
+		"prepack": "unbuild"
+	},
+	"keywords": ["aoc", "adventofcode"],
+	"author": "taskylizard",
+	"license": "MIT",
+	"dependencies": {
+		"aocjs": "workspace:^",
+		"@aockit/core": "workspace:^",
+		"chokidar": "^4.0.1",
+		"citty": "^0.1.6",
+		"consola": "^3.2.3",
+		"esbuild": "^0.24.0",
+		"execa": "^9.5.1",
+		"jiti": "^2.4.1",
+		"pathe": "^1.1.2",
+		"perfect-debounce": "^1.0.0",
+		"rolldown": "0.14.0",
+		"tinyexec": "^0.3.1"
+	},
+	"peerDependencies": {
+		"esbuild": "^0.24.0",
+		"jiti": "^2.4.1",
+		"rolldown": "^0.14.0"
+	},
+	"peerDependenciesMeta": {
+		"jiti": {
+			"optional": true
+		},
+		"esbuild": {
+			"optional": true
+		},
+		"rolldown": {
+			"optional": true
+		}
+	}
 }

@@ -1,0 +1,38 @@
+{
+	"name": "@aockit/core",
+	"version": "0.0.3",
+	"description": "Core package for aockit.",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/aockit/aockit.git",
+		"directory": "packages/core"
+	},
+	"bugs": {
+		"url": "https://github.com/aockit/aockit/issues"
+	},
+	"homepage": "https://github.com/aockit/aockit#readme",
+	"sideEffects": false,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"files": ["dist"],
+	"keywords": ["aoc", "adventofcode"],
+	"author": "taskylizard",
+	"license": "MIT",
+	"scripts": {
+		"build": "unbuild",
+		"prepack": "pnpm build"
+	},
+	"dependencies": {
+		"consola": "^3.2.3",
+		"pathe": "^1.1.2"
+	}
+}
