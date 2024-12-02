@@ -1,12 +1,12 @@
-import type { ClientOptions, Leaderboard } from "./types";
+import type { ClientOptions, Leaderboard } from './types'
 
 export class Client {
-  session: string;
-  "user-agent"?: string = "aocjs (https://npmjs.com/package/aocjs)";
+  session: string
+  'user-agent'?: string = 'aocjs (https://npmjs.com/package/aocjs)'
 
   constructor(options: ClientOptions) {
-    this.session = options.session;
-    if (options["user-agent"]) this["user-agent"] = options["user-agent"];
+    this.session = options.session
+    if (options['user-agent']) this['user-agent'] = options['user-agent']
   }
 
   /**
@@ -16,12 +16,12 @@ export class Client {
     const request = await fetch(`https://adventofcode.com/${path}`, {
       headers: {
         Cookie: `session=${this.session}`,
-        "User-Agent": this["user-agent"]!,
+        'User-Agent': this['user-agent']!
       },
-      ...options,
-    });
-    if (!request.ok) throw new Error(`${request.status} ${request.statusText}`);
-    return request;
+      ...options
+    })
+    if (!request.ok) throw new Error(`${request.status} ${request.statusText}`)
+    return request
   }
 
   /**
@@ -31,37 +31,45 @@ export class Client {
    * @param day Advent of Code year's puzzle day.
    */
   public async getInput(year: number, day: number): Promise<string> {
-    return await (await this.fetcher(`${year}/day/${day}/input`)).text();
+    return await (await this.fetcher(`${year}/day/${day}/input`)).text()
   }
 
   /**
    * Gets your specified private leaderboard.
    * @param year Advent of Code year.
    * @param id Your leaderboard id.
-   * @param [sorted=false] If true, returns a sorted object of leaderboard members by stars, just like the site.
+   * @param [sorted=false] If true, returns a sorted array of leaderboard members by stars.
    */
-  public async getLeaderboard(
+  public async getLeaderboard<const T extends boolean = false>(
     year: number,
     id: number,
-    sorted: boolean = false,
-  ): Promise<Leaderboard | Omit<Leaderboard, "members">> {
-    const request = await this.fetcher(`${year}/leaderboard/private/view/${id}.json`);
+    sorted?: T
+  ): Promise<
+    T extends true ? Array<Leaderboard['members'][string]> : Leaderboard
+  > {
+    const request = await this.fetcher(
+      `${year}/leaderboard/private/view/${id}.json`
+    )
 
     if (request.status === 302) {
-      return new Error(
-        "Cannot find that leaderboard, maybe it doesn't exist or you don't have access?",
-      );
+      throw new Error(
+        "Cannot find that leaderboard, maybe it doesn't exist or you don't have access?"
+      )
     }
 
-    const data = (await request.json()) as Leaderboard;
+    const data = (await request.json()) as Leaderboard
 
     if (sorted) {
       return Object.values(data.members).sort(
         (a, b) =>
-          b.stars - a.stars || b.local_score - a.local_score || b.global_score - a.global_score,
-      );
+          b.stars - a.stars ||
+          b.local_score - a.local_score ||
+          b.global_score - a.global_score
+      ) as T extends true ? Array<Leaderboard['members'][string]> : Leaderboard
     }
-    return data;
+    return data as T extends true
+      ? Array<Leaderboard['members'][string]>
+      : Leaderboard
   }
 
   // public async submit(day: number, year: number, part: 1 | 2, solution: string) {
