@@ -9,7 +9,7 @@ aockit is an polyglot CLI for [Advent of Code](https://adventofcode.com).
 - Downloads your input file and saves it locally
 - [Template support for other languages](#templates)
 - [Testing support](#testing)
-- Supports both JavaScript and TypeScript, powered by ESBuild (or experimentally, [Rolldown](#rolldown-support))
+- Supports both JavaScript and TypeScript, powered by ESBuild (or experimentally other [builders](#builders))
 - Provides an elegant `run()` function and utilities
 
 🚧 This project is under heavy development.
@@ -20,7 +20,7 @@ Setup:
 
 ```sh
 [pnpm|npm|yarn|bun] init
-[pnpm|npm|yarn|bun] install aockit
+[pnpm|npm|yarn|bun] install -D @aockit/cli esbuild@0.24.0
 ```
 
 Then run `pnpm aoc init` (you may have to check the specifics for other package managers, or just add `aoc` as a package.json script.)
@@ -34,7 +34,8 @@ At this point, you'll need to add your Advent of Code browser session key, which
 3. Go to the Application tab.
 4. On the sidebar, under the Storage section, expand Cookies and click on https://adventofcode.com.
 5. Find the cookie named "session" and copy its value.
-6. Save this in a `.env` file with the name `AOC_SESSION` in the root. Alternatively, you could save this in your shell's rc file, as this session lasts a very long time.
+6. Export this value in your shell's config file with the name `AOC_SESSION`.
+   e.g. `export AOC_SESSION="your_session_key"`
 
 Now, to start a day, run: `pnpm aoc start <day>`.
 
@@ -153,13 +154,15 @@ Now, you can start with `pnpm aoc start -d 1 -t rust`, where `-t`/`--template` i
 
 The next time, it will remember and run your runner command on file changes.
 
-## Rolldown Support
+## Runners
+
+### Rolldown
 
 Rolldown is an upcoming reimplementation of Rollup, written in Rust, by the same team behind Vite.
 
 It's still experimental and may not work perfectly.
 
-To use it, install the `rolldown` package and set the builder to `rolldown` in your `.aockit.json`.
+To use it, install the `rolldown@0.14.0` package and set the builder to `rolldown` in your `.aockit.json`.
 
 ```json
 {
@@ -173,6 +176,24 @@ Or add the builder flag to your `aoc start` command:
 pnpm aoc start -d 1 -b rolldown
 ```
 
+### jiti
+
+Uses [unjs/jiti](https;//github.com/unjs/jiti).
+
+To use it, install the `jiti@2.4.1` package and set the builder to `jiti` in your `.aockit.json`.
+
+```json
+{
+  "builder": "jiti"
+}
+```
+
+Or add the builder flag to your `aoc start` command:
+
+```sh
+pnpm aoc start -d 1 -b jiti
+`
+
 ## License
 
 Copyright (c) 2024 taskylizard. MIT Licensed.
@@ -185,3 +206,4 @@ Copyright (c) 2024 taskylizard. MIT Licensed.
 [npm-downloads-href]: https://npmjs.com/package/aockit
 [jsdocs-src]: https://img.shields.io/badge/jsDocs.io-reference-18181B?style=flat&labelColor=f38ba8&color=585b70&logoColor=white
 [jsdocs-href]: https://www.jsdocs.io/package/aockit
+```
