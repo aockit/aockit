@@ -7,21 +7,8 @@ import { config } from "./io";
 export const log = consola.create({ defaults: { tag: "🎄" } });
 export const dedent = (str: string) =>
   str.replaceAll(new RegExp(`^${(/^(\t| )+/.exec(str) || "")[0]}`, "gm"), "");
-export const toFixed = (value: number, precision: number = 3) => Number(value.toFixed(precision));
-
-export function generatePackageJSON(year: string): string {
-  return JSON.stringify(
-    {
-      name: year,
-      version: "1.0.0",
-      type: "module",
-      keywords: ["aoc", "adventofcode"],
-      dependencies: {},
-    },
-    null,
-    2,
-  );
-}
+export const toFixed = (value: number, precision: number = 3) =>
+  Number(value.toFixed(precision));
 
 export function generateConfig(year: string): string {
   return JSON.stringify(
@@ -69,7 +56,8 @@ export async function setRunner(
     const conf = await config.load(year);
 
     // 4. Write to our year root config
-    if (tmpconf.runner !== undefined) conf.days[Number(day)].runner = tmpconf.runner;
+    if (tmpconf.runner !== undefined)
+      conf.days[Number(day)].runner = tmpconf.runner;
     await config.save(year, conf);
 
     // 5. Remove the temporary file

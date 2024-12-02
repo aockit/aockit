@@ -8,9 +8,9 @@ importers:
 
   .:
     dependencies:
-      aockit:
+      '@aockit/cli':
         specifier: workspace:^
-        version: link:packages/kit
+        version: link:packages/cli
     devDependencies:
       '@types/node':
         specifier: ^22.10.1
@@ -29,15 +29,15 @@ importers:
         version: 1.5.0(@algolia/client-search@5.15.0)(@types/node@22.10.1)(postcss@8.4.49)(search-insights@2.17.3)(typescript@5.7.2)
       vitest:
         specifier: ^2.1.6
-        version: 2.1.6(@types/node@22.10.1)(jiti@2.4.1)
+        version: 2.1.6(@types/node@22.10.1)(jiti@2.4.1)(yaml@2.6.1)
 
   packages/aocjs: {}
 
-  packages/kit:
+  packages/cli:
     dependencies:
-      '@antfu/utils':
-        specifier: ^0.7.10
-        version: 0.7.10
+      '@aockit/core':
+        specifier: workspace:^
+        version: link:../core
       aocjs:
         specifier: workspace:^
         version: link:../aocjs
@@ -50,9 +50,6 @@ importers:
       consola:
         specifier: ^3.2.3
         version: 3.2.3
-      dotenv:
-        specifier: ^16.4.5
-        version: 16.4.5
       esbuild:
         specifier: ^0.24.0
         version: 0.24.0
@@ -71,6 +68,18 @@ importers:
       rolldown:
         specifier: 0.14.0
         version: 0.14.0
+      tinyexec:
+        specifier: ^0.3.1
+        version: 0.3.1
+
+  packages/core:
+    dependencies:
+      consola:
+        specifier: ^3.2.3
+        version: 3.2.3
+      pathe:
+        specifier: ^1.1.2
+        version: 1.1.2
 
 packages:
 
@@ -149,9 +158,6 @@ packages:
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
-
-  '@antfu/utils@0.7.10':
-    resolution: {integrity: sha512-+562v9k4aI80m1+VuMHehNJWLOFjBnXn3tdOitzD0il5b7smkSBal4+a3oKiQTbrwMmN/TBUMDvbdoWDehgOww==}
 
   '@babel/code-frame@7.26.2':
     resolution: {integrity: sha512-RJlIHRueQgwWitWgF8OdFYGZX328Ax5BCemNGlqHfplnRT9ESi8JkFlvaVYbS+UubVY6dpv87Fs2u5M29iNFVQ==}
@@ -2400,6 +2406,11 @@ packages:
   yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
 
+  yaml@2.6.1:
+    resolution: {integrity: sha512-7r0XPzioN/Q9kXBro/XPnA6kznR73DHq+GXh5ON7ZozRO6aMjbmiBuKste2wslTFkC5d1dw0GooOCepZXJ2SAg==}
+    engines: {node: '>= 14'}
+    hasBin: true
+
   yoctocolors@2.1.1:
     resolution: {integrity: sha512-GQHQqAopRhwU8Kt1DDM8NjibDXHC8eoh1erhGAJPEyveY9qqVeXvVikNKrDz69sHowPMorbPUrH/mx8c50eiBQ==}
     engines: {node: '>=18'}
@@ -2521,8 +2532,6 @@ snapshots:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.5
       '@jridgewell/trace-mapping': 0.3.25
-
-  '@antfu/utils@0.7.10': {}
 
   '@babel/code-frame@7.26.2':
     dependencies:
@@ -3146,13 +3155,13 @@ snapshots:
       chai: 5.1.2
       tinyrainbow: 1.2.0
 
-  '@vitest/mocker@2.1.6(vite@6.0.2(@types/node@22.10.1)(jiti@2.4.1))':
+  '@vitest/mocker@2.1.6(vite@6.0.2(@types/node@22.10.1)(jiti@2.4.1)(yaml@2.6.1))':
     dependencies:
       '@vitest/spy': 2.1.6
       estree-walker: 3.0.3
       magic-string: 0.30.14
     optionalDependencies:
-      vite: 6.0.2(@types/node@22.10.1)(jiti@2.4.1)
+      vite: 6.0.2(@types/node@22.10.1)(jiti@2.4.1)(yaml@2.6.1)
 
   '@vitest/pretty-format@2.1.6':
     dependencies:
@@ -4528,13 +4537,13 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
 
-  vite-node@2.1.6(@types/node@22.10.1)(jiti@2.4.1):
+  vite-node@2.1.6(@types/node@22.10.1)(jiti@2.4.1)(yaml@2.6.1):
     dependencies:
       cac: 6.7.14
       debug: 4.3.7
       es-module-lexer: 1.5.4
       pathe: 1.1.2
-      vite: 6.0.2(@types/node@22.10.1)(jiti@2.4.1)
+      vite: 6.0.2(@types/node@22.10.1)(jiti@2.4.1)(yaml@2.6.1)
     transitivePeerDependencies:
       - '@types/node'
       - jiti
@@ -4558,7 +4567,7 @@ snapshots:
       '@types/node': 22.10.1
       fsevents: 2.3.3
 
-  vite@6.0.2(@types/node@22.10.1)(jiti@2.4.1):
+  vite@6.0.2(@types/node@22.10.1)(jiti@2.4.1)(yaml@2.6.1):
     dependencies:
       esbuild: 0.24.0
       postcss: 8.4.49
@@ -4567,6 +4576,7 @@ snapshots:
       '@types/node': 22.10.1
       fsevents: 2.3.3
       jiti: 2.4.1
+      yaml: 2.6.1
 
   vitepress@1.5.0(@algolia/client-search@5.15.0)(@types/node@22.10.1)(postcss@8.4.49)(search-insights@2.17.3)(typescript@5.7.2):
     dependencies:
@@ -4618,10 +4628,10 @@ snapshots:
       - typescript
       - universal-cookie
 
-  vitest@2.1.6(@types/node@22.10.1)(jiti@2.4.1):
+  vitest@2.1.6(@types/node@22.10.1)(jiti@2.4.1)(yaml@2.6.1):
     dependencies:
       '@vitest/expect': 2.1.6
-      '@vitest/mocker': 2.1.6(vite@6.0.2(@types/node@22.10.1)(jiti@2.4.1))
+      '@vitest/mocker': 2.1.6(vite@6.0.2(@types/node@22.10.1)(jiti@2.4.1)(yaml@2.6.1))
       '@vitest/pretty-format': 2.1.6
       '@vitest/runner': 2.1.6
       '@vitest/snapshot': 2.1.6
@@ -4637,8 +4647,8 @@ snapshots:
       tinyexec: 0.3.1
       tinypool: 1.0.2
       tinyrainbow: 1.2.0
-      vite: 6.0.2(@types/node@22.10.1)(jiti@2.4.1)
-      vite-node: 2.1.6(@types/node@22.10.1)(jiti@2.4.1)
+      vite: 6.0.2(@types/node@22.10.1)(jiti@2.4.1)(yaml@2.6.1)
+      vite-node: 2.1.6(@types/node@22.10.1)(jiti@2.4.1)(yaml@2.6.1)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 22.10.1
@@ -4684,6 +4694,9 @@ snapshots:
   yallist@3.1.1: {}
 
   yallist@4.0.0: {}
+
+  yaml@2.6.1:
+    optional: true
 
   yoctocolors@2.1.1: {}
 

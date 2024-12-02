@@ -1,6 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
 import type { ExecaError } from "execa";
-import { execa } from "execa";
 import { watch } from "chokidar";
 import { join, resolve } from "pathe";
 import { debounce } from "perfect-debounce";
@@ -10,6 +9,7 @@ import { createESBuildContext } from "./builders/esbuild";
 import { createRolldownContext } from "./builders/rolldown";
 import { createJitiContext } from "./builders/jiti";
 import { log } from "./utils";
+import { x } from "tinyexec";
 
 const ignored = existsSync(join(".gitignore"))
   ? readFileSync(join(".gitignore"), { encoding: "utf8" })
@@ -87,7 +87,9 @@ export async function createBuildContext(ctx: BuildContext): Promise<void> {
       ctx.config.days[Number(ctx.day)].runner!.split(" ");
     const reload = debounce(async () => {
       try {
-        const { stdout } = await execa(cmd, cmdArgs, { cwd: resolve(ctx.dir) });
+        const { stdout } = await x(cmd, cmdArgs, {
+          nodeOptions: { cwd: resolve(ctx.dir) },
+        });
         console.log(stdout);
       } catch (_error) {
         const error = _error as ExecaError;

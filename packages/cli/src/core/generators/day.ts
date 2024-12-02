@@ -5,7 +5,7 @@ import { join } from "pathe";
 import { dedent, log, setRunner } from "../utils";
 
 export function generateBoilerplate(): string {
-  return `import { run } from "aockit";
+  return `import { run } from "@aockit/core";
 
 run({});
 `;
@@ -38,13 +38,17 @@ export function generateDayReadme(year: number, day: number): string {
   `);
 }
 
-export async function scaffoldDay(year: string, day: string, template?: string): Promise<void> {
+export async function scaffoldDay(
+  year: string,
+  day: string,
+  template?: string,
+): Promise<void> {
   // exit early if not present
   if (!process.env.AOC_SESSION) {
     log.error(
       `The ${c.magenta(
         "AOC_SESSION",
-      )} enviornment variable is not set. You can set it in .env file in root or in your shellrc.`,
+      )} enviornment variable is not set. You can set it by exporting AOC_SESSION in your shellrc.`,
     );
     process.exit(1);
   }
@@ -66,5 +70,8 @@ export async function scaffoldDay(year: string, day: string, template?: string):
   await fsp.writeFile(join(dir, "README.md"), readme);
 
   log.success(`Successfully scaffolded project for day ${day}, year ${year}.`);
-  log.info("Your file tree should look like this:", generateFileTree(year, day));
+  log.info(
+    "Your file tree should look like this:",
+    generateFileTree(year, day),
+  );
 }

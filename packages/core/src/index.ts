@@ -1,16 +1,17 @@
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { performance } from "node:perf_hooks";
-import { dirname, join } from "pathe";
-import { colors as c } from "consola/utils";
-
 import type { Solutions, SolutionContext, Solution, Test } from "./types";
-import { log } from "./utils";
+import { colors as c } from "consola/utils";
+import { createConsola } from "consola";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const log = createConsola({ defaults: { tag: "solution" } });
 
-function testFail(name: string, num: number, expected: string, recieved: string) {
+function testFail(
+  name: string,
+  num: number,
+  expected: string,
+  recieved: string,
+) {
   return console.log(
     `${c.red(c.bold(c.inverse(` FAIL `)))} ${c.cyan(name)} ${c.gray(`#${num}`)}\n`,
     c.green(`+ Expected: ${c.bold(expected)}\n`),
@@ -30,16 +31,13 @@ function testPass(name: string, num: number, message: string) {
  */
 export function run(solutions: Solutions): void {
   const context: SolutionContext = {
-    input: readFileSync(join(__dirname, "..", "input.txt"), "utf8"),
-    readInput(into) {
-      const filter = into === "groups" ? "\n\n" : "\n";
-      return readFileSync(join(__dirname, "..", "input.txt"), "utf8")
+    input: readFileSync(new URL("../input.txt", import.meta.url), "utf8"),
+    readInput(mode) {
+      const filter = mode === "groups" ? "\n\n" : "\n";
+      return readFileSync(new URL("../input.txt", import.meta.url), "utf8")
         .split(filter)
         .filter(Boolean);
     },
-    sum: (a: number, b: number) => a + b,
-    product: (a: number, b: number) => a * b,
-
     asc: (a: number, b: number) => {
       if (a < b) return -1;
       if (a === b) return 0;
@@ -51,7 +49,10 @@ export function run(solutions: Solutions): void {
       return +1;
     },
 
-    by: <O, K extends keyof O>(key: K, compareFn: (a: O[K], b: O[K]) => number) => {
+    by: <O, K extends keyof O>(
+      key: K,
+      compareFn: (a: O[K], b: O[K]) => number,
+    ) => {
       return (a: O, b: O) => compareFn(a[key], b[key]);
     },
   };
@@ -61,12 +62,17 @@ export function run(solutions: Solutions): void {
   if (solutions.part2) runSolution(solutions.part2, context, 2);
 }
 
-function runSolution(solution: Solution, context: SolutionContext, part: 1 | 2): void {
+function runSolution(
+  solution: Solution,
+  context: SolutionContext,
+  part: 1 | 2,
+): void {
   const startTime = performance.now();
   const result = solution(context);
   const time = performance.now() - startTime;
+
   log.info(
-    `Part ${c.cyan(part)} ${c.gray("(")}${c.magenta(`${time.toFixed()}ms`)}${c.gray(
+    `Part ${c.cyan(String(part))} ${c.gray("(")}${c.magenta(`${time.toFixed()}ms`)}${c.gray(
       ")",
     )}: ${result}`,
   );

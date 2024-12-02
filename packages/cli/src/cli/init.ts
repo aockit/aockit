@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import fsp from "node:fs/promises";
 import { defineCommand } from "citty";
 import { join } from "pathe";
-import { log, generatePackageJSON, generateConfig } from "..//core/utils";
+import { log, generateConfig } from "../core/utils";
 import { generateReadme } from "../core/generators/year";
 import { config } from "../core/io";
 
@@ -33,7 +33,6 @@ export default defineCommand({
     }
 
     await fsp.mkdir(year);
-    await fsp.writeFile(join(year, "package.json"), generatePackageJSON(year));
     await fsp.writeFile(join(year, ".aockit.json"), generateConfig(year));
     await fsp.writeFile(
       join(year, "README.md"),

@@ -12,7 +12,7 @@
   "author": "taskylizard",
   "license": "MIT",
   "dependencies": {
-    "aockit": "workspace:^"
+    "@aockit/cli": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
