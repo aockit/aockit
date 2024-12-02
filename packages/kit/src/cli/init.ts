@@ -34,7 +34,7 @@ export default defineCommand({
 
     await fsp.mkdir(year);
     await fsp.writeFile(join(year, "package.json"), generatePackageJSON(year));
-    await fsp.writeFile(join(year, ".aocity.json"), generateConfig(year));
+    await fsp.writeFile(join(year, ".aockit.json"), generateConfig(year));
     await fsp.writeFile(
       join(year, "README.md"),
       generateReadme(await config.load(year)),

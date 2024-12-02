@@ -4,7 +4,10 @@
     "build:cli": "pnpm --filter aockit build",
     "build": "pnpm --parallel -r build",
     "format": "prettier --cache -w .",
-    "test": "vitest"
+    "test": "vitest",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "author": "taskylizard",
   "license": "MIT",
@@ -13,8 +16,10 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
+    "bumpp": "^9.8.1",
     "typescript": "^5.7.2",
     "unbuild": "^2.0.0",
+    "vitepress": "^1.5.0",
     "vitest": "^2.1.6"
   },
   "packageManager": "pnpm@9.14.4+sha512.c8180b3fbe4e4bca02c94234717896b5529740a6cbadf19fa78254270403ea2f27d4e1d46a08a0f56c89b63dc8ebfd3ee53326da720273794e6200fcf0d184ab"

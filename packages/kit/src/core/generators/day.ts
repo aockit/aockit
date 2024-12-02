@@ -5,7 +5,7 @@ import { join } from "pathe";
 import { dedent, log, setRunner } from "../utils";
 
 export function generateBoilerplate(): string {
-  return `import { run } from "aocity";
+  return `import { run } from "aockit";
 
 run({});
 `;
@@ -19,7 +19,7 @@ export function generateFileTree(year: string, day: string): string {
        │   ├── ${c.bold(c.blue("index.ts"))}
        │   ├── ${c.bold(c.blue("input.txt"))}
        │   └── ${c.bold(c.blue("README.md"))}
-       └── ${c.bold(c.blue(".aocity.json"))}
+       └── ${c.bold(c.blue(".aockit.json"))}
   `),
   );
 }

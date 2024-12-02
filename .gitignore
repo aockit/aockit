@@ -5,6 +5,7 @@
 **/output
 **/coverage
 **/temp
+**/.vitepress/dist
 **/.vitepress/cache
 **/.nuxt
 **/.vercel

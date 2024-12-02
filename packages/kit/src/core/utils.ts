@@ -57,7 +57,7 @@ export async function setRunner(
   dir: string,
 ): Promise<void> {
   const tmpl = join("templates", template);
-  const file = join(tmpl, ".aocity.json");
+  const file = join(tmpl, ".aockit.json");
 
   // 1. Copy the template to our day
   await fsp.cp(tmpl, dir, { recursive: true });
@@ -73,6 +73,6 @@ export async function setRunner(
     await config.save(year, conf);
 
     // 5. Remove the temporary file
-    await fsp.rm(join(year, day, ".aocity.json"));
+    await fsp.rm(join(year, day, ".aockit.json"));
   }
 }
