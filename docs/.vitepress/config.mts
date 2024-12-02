@@ -2,8 +2,8 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "aockit",
-  description: "Polyglot Advent of Code CLI",
+  title: 'aockit',
+  description: 'Polyglot Advent of Code CLI',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [

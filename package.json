@@ -1,9 +1,12 @@
 {
   "name": "@aockit/monorepo",
   "scripts": {
+    "format": "biome format . --write",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint . --write",
+    "lint:fix:unsafe": "biome lint . --unsafe",
     "build:cli": "pnpm --filter aockit build",
     "build": "pnpm --parallel -r build",
-    "format": "prettier --cache -w .",
     "test": "vitest",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
@@ -15,6 +18,8 @@
     "@aockit/cli": "workspace:^"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@taskylizard/biome-config": "^1.0.5",
     "@types/node": "^22.10.1",
     "bumpp": "^9.8.1",
     "typescript": "^5.7.2",

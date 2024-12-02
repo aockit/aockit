@@ -1,79 +1,79 @@
-import type { Config } from "../types";
-import { dedent, toFixed } from "../utils";
+import type { Config } from '../types'
+import { dedent, toFixed } from '../utils'
 
 export function generateDayBadges(config: Config): string {
   return Object.entries(config.days)
     .map((value) => {
-      const { part1, part2 } = value[1];
-      const day = value[0].padStart(2, "0");
+      const { part1, part2 } = value[1]
+      const day = value[0].padStart(2, '0')
 
       const color =
         // eslint-disable-next-line no-nested-ternary
-        (part1.solved && part2.solved) || (part1.solved && day === "25")
-          ? "green"
+        (part1.solved && part2.solved) || (part1.solved && day === '25')
+          ? 'green'
           : part1.solved || part2.solved
-            ? "yellow"
-            : "gray";
+            ? 'yellow'
+            : 'gray'
 
       const badge = `![Day](https://badgen.net/badge/${day}/%E2%98%8${
         part1.solved ? 5 : 6
-      }%E2%98%8${part2.solved || (part1.solved && day === "25") ? 5 : 6}/${color})`;
+      }%E2%98%8${part2.solved || (part1.solved && day === '25') ? 5 : 6}/${color})`
 
-      return color !== "gray" ? `[${badge}](src/day${day})` : badge;
+      return color !== 'gray' ? `[${badge}](src/day${day})` : badge
     })
-    .join("\n");
+    .join('\n')
 }
 
 export function generateResults(config: Config): string {
-  let totalTime = 0;
-  let totalStars = 0;
+  let totalTime = 0
+  let totalStars = 0
 
   const results = Object.entries(config.days)
     .map((value) => {
-      const { part1, part2 } = value[1];
-      const day = value[0].padStart(2, "0");
+      const { part1, part2 } = value[1]
+      const day = value[0].padStart(2, '0')
 
-      let timeBoth = 0;
+      let timeBoth = 0
 
       if (part1.solved) {
-        totalStars++;
-        totalTime += part1.time ?? 0;
-        timeBoth += part1.time ?? 0;
+        totalStars++
+        totalTime += part1.time ?? 0
+        timeBoth += part1.time ?? 0
       }
       if (part2.solved) {
-        totalStars++;
-        totalTime += part2.time ?? 0;
-        timeBoth += part2.time ?? 0;
+        totalStars++
+        totalTime += part2.time ?? 0
+        timeBoth += part2.time ?? 0
       }
 
-      if (day === "25" && part1.solved) {
-        totalStars++;
+      if (day === '25' && part1.solved) {
+        totalStars++
       }
 
       return dedent(`
       \`\`\`
       Day ${day}
-      Time part 1: ${part1.time !== null && part1.solved ? `${toFixed(part1.time)}ms` : "-"}
-      Time part 2: ${part2.time !== null && part2.solved ? `${toFixed(part2.time)}ms` : "-"}
-      Both parts: ${timeBoth !== 0 ? `${toFixed(timeBoth)}ms` : "-"}
+      Time part 1: ${part1.time !== null && part1.solved ? `${toFixed(part1.time)}ms` : '-'}
+      Time part 2: ${part2.time !== null && part2.solved ? `${toFixed(part2.time)}ms` : '-'}
+      Both parts: ${timeBoth !== 0 ? `${toFixed(timeBoth)}ms` : '-'}
       \`\`\`
-    `);
+    `)
     })
-    .join("\n\n");
+    .join('\n\n')
 
   const summary = dedent(`
     \`\`\`
     Total stars: ${totalStars}/50
     Total time: ${toFixed(totalTime)}ms
     \`\`\`
-  `);
+  `)
 
-  return [results, summary].join("\n\n");
+  return [results, summary].join('\n\n')
 }
 
 export function generateReadme(config: Config): string {
-  const badges = generateDayBadges(config);
-  const results = generateResults(config);
+  const badges = generateDayBadges(config)
+  const results = generateResults(config)
 
   return dedent(`
     <!-- Entries between SOLUTIONS and RESULTS tags are auto-generated -->
@@ -105,5 +105,5 @@ export function generateReadme(config: Config): string {
     ---
 
     ✨🎄🎁🎄🎅🎄🎁🎄✨
-  `);
+  `)
 }
