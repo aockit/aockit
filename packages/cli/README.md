@@ -20,7 +20,7 @@ Setup:
 
 ```sh
 [pnpm|npm|yarn|bun] init
-[pnpm|npm|yarn|bun] install -D @aockit/cli esbuild@0.24.0
+[pnpm|npm|yarn|bun] install -D @aockit/cli @aockit/core esbuild@0.24.0
 ```
 
 Then run `pnpm aoc init` (you may have to check the specifics for other package managers, or just add `aoc` as a package.json script.)
@@ -154,7 +154,7 @@ Now, you can start with `pnpm aoc start -d 1 -t rust`, where `-t`/`--template` i
 
 The next time, it will remember and run your runner command on file changes.
 
-## Runners
+## Builders
 
 ### Rolldown
 
@@ -192,7 +192,7 @@ Or add the builder flag to your `aoc start` command:
 
 ```sh
 pnpm aoc start -d 1 -b jiti
-`
+```
 
 ## License
 
