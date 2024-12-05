@@ -23,15 +23,23 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
-  "keywords": ["aoc", "adventofcode"],
+  "keywords": [
+    "aoc",
+    "adventofcode"
+  ],
   "author": "taskylizard",
   "license": "MIT",
   "scripts": {
     "build": "unbuild",
     "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "defu": "^6.1.4"
   }
 }
