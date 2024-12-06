@@ -1,28 +1,34 @@
 import { defineConfig } from 'vitepress'
 
-// https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: 'aockit',
   description: 'Polyglot Advent of Code CLI',
+  markdown: {
+    theme: 'rose-pine-moon'
+  },
   themeConfig: {
-    // https://vitepress.dev/reference/default-theme-config
-    nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Examples', link: '/markdown-examples' }
-    ],
-
+    footer: {
+      message: 'Released under the MIT License.',
+      copyright: `Copyright © ${new Date().getFullYear()} taskylizard.`
+    },
     sidebar: [
       {
-        text: 'Examples',
-        items: [
-          { text: 'Markdown Examples', link: '/markdown-examples' },
-          { text: 'Runtime API Examples', link: '/api-examples' }
-        ]
+        text: 'Getting Started',
+        link: '/getting-started'
+      },
+      {
+        text: 'JavaScript Support',
+        link: '/javascript'
+      },
+      {
+        text: 'Language Support',
+        link: '/language-support'
+      },
+      {
+        text: 'Templates',
+        link: '/templates'
       }
     ],
-
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
-    ]
+    socialLinks: [{ icon: 'github', link: 'https://github.com/aockit/aockit' }]
   }
 })

@@ -5,21 +5,9 @@ layout: home
 hero:
   name: "aockit"
   text: "Polyglot Advent of Code CLI"
-  tagline: My great project tagline
+  tagline: Language agnostic CLI for Advent of Code
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
-    - theme: alt
-      text: API Examples
-      link: /api-examples
-
-features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+      text: Get Started
+      link: /getting-started
 ---
-
