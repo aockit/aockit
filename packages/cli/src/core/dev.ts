@@ -8,12 +8,13 @@ import { createJitiContext } from './builders/jiti'
 import { createRolldownContext } from './builders/rolldown'
 import type { Builder, Config } from './types'
 import { log } from './utils'
-// import { confirm, text } from '@clack/prompts'
+import { confirm, text, select } from '@clack/prompts'
+import { client } from './client'
 
 const gitignore = existsSync(join('.gitignore'))
   ? readFileSync(join('.gitignore'), { encoding: 'utf8' })
-      .split('\n')
-      .filter(Boolean)
+    .split('\n')
+    .filter(Boolean)
   : []
 
 // Warn if .gitignore doesnt have input.txt
@@ -23,34 +24,14 @@ if (gitignore.length > 0 && !gitignore.includes('**/input.txt')) {
   )
 }
 
-// const _createRenderer = () => {
-//   const renderFooter = () => {
-//     log.info(
-//       `🦌 Press: ${c.green(c.bold('r'))} to reload • ${c.red(c.bold('q'))} to quit • ${c.magenta(c.bold('s'))} to submit`
-//     )
-//   }
-//
-//   const logWithClear = (...args: any[]) => {
-//     console.clear()
-//     // biome-ignore lint/suspicious/noConsoleLog: <explanation>
-//     console.log(...args)
-//     renderFooter()
-//   }
-//
-//   return {
-//     renderFooter,
-//     logWithClear
-//   }
-// }
-
 const createWatcher = async (
+  year: number,
+  day: number,
   dir: string,
   reload: () => Promise<void>,
+  // Reset prompting flag
   dispose?: () => Promise<void> | void
 ): Promise<void> => {
-  // const ui = createRenderer()
-  // console.clear()
-
   const watcher = await import('@parcel/watcher').catch((error) => {
     log.error('[dev:watcher:error] Failed to load @parcel/watcher', error)
     return process.exit(1)
@@ -88,52 +69,75 @@ const createWatcher = async (
     }
   )
 
+  let isPrompting = false
+
   process.stdin
     .setRawMode(true)
     .resume()
     .setEncoding('utf-8')
     .on('data', async (key: string) => {
+      if (isPrompting) return
+
       switch (key) {
         case '\u0071':
         // biome-ignore lint/suspicious/noFallthroughSwitchClause: blah blah
-        case '\u0003':
+        case '\u0003': // 'q' key for quit
           log.info('Exiting.')
           await _watcher.unsubscribe()
           await dispose?.()
           process.exit(0)
-        case '\u0072':
+        case '\u0072': // 'r' key for reload
           log.info('Reloading.')
           await reload()
           break
-        // case '\u0073': // 's' key for submit
-        //   try {
-        //     process.stdin.setRawMode(false)
-        //
-        //     // Prompt for solution text
-        //     const solution = await text({
-        //       message: 'Enter your solution text:',
-        //       placeholder: 'Type your solution here...',
-        //       validate(value) {
-        //         if (!value) return 'Solution cannot be empty!'
-        //       }
-        //     })
-        //
-        //     if (solution) {
-        //       // Confirm submission
-        //       const shouldSubmit = await confirm({
-        //         message: 'Are you sure you want to submit this solution?'
-        //       })
-        //
-        //       if (shouldSubmit) {
-        //         log.success('Solution submitted successfully!')
-        //       } else {
-        //         log.info('Submission cancelled.')
-        //       }
-        //     }
-        //   } catch (error) {
-        //     log.error('Submission error:', error)
-        //   }
-        //   break
+        case '\u0073': // 's' key for submit
+          try {
+            isPrompting = true
+
+            const part = await select({
+              message: 'Select a part to submit',
+              options: [
+                { label: 'Part 1', value: 1 },
+                { label: 'Part 2', value: 2 }
+              ]
+            })
+            if (typeof part === 'symbol') return
+
+            const solution = await text({
+              message: `Enter your solution for part ${part}`,
+              placeholder: 'Type your solution here...',
+              validate(value) {
+                if (!value) return 'Solution cannot be empty!'
+                if (value.length > 100)
+                  return 'Solution cannot be longer than 100 characters!'
+              }
+            })
+
+            if (typeof solution === 'symbol') return
+
+            if (solution) {
+              const shouldSubmit = await confirm({
+                message: `Submit "${solution}" for part ${part}?`
+              })
+
+              if (shouldSubmit) {
+                const request = await client.submit(year, day, part, solution)
+                if (!request) {
+                  log.fail("Couldn't submit solution")
+                  return
+                }
+                log.success('Solution submitted successfully!')
+              } else {
+                log.info('Submission cancelled.')
+              }
+            }
+          } catch (error) {
+            log.fail('Submission error:', error)
+          } finally {
+            isPrompting = false
+            process.stdin.setRawMode(true).resume()
+          }
+          break
         default:
           break
       }
@@ -141,15 +145,14 @@ const createWatcher = async (
 
   log.info('Started server, listening for changes...')
   log.info(
-    `🦌 Press: ${c.green(c.bold('r'))} to reload • ${c.red(c.bold('q'))} to quit`
+    `🦌 Press: ${c.green(c.bold('r'))} to reload • ${c.red(c.bold('q'))} to quit • ${c.magenta(c.bold('s'))} to submit`
   )
-
-  // ui.renderFooter()
 }
 
 interface Context {
   config: Config
   dir: string
+  year: string
   day: string
   builder: string
 }
@@ -181,18 +184,36 @@ export async function createDevContext(ctx: Context): Promise<void> {
         throw error
       }
     })
-    await createWatcher(ctx.dir, reload)
+    await createWatcher(Number(ctx.year), Number(ctx.day), ctx.dir, reload)
   } else {
     const builder = (ctx.config.builder || ctx.builder) as Builder
     if (builder === 'jiti') {
       const { reload, dispose } = await createJitiContext(ctx.dir)
-      await createWatcher(ctx.dir, reload, dispose)
+      await createWatcher(
+        Number(ctx.year),
+        Number(ctx.day),
+        ctx.dir,
+        reload,
+        dispose
+      )
     } else if (builder === 'rolldown') {
       const { reload, dispose } = await createRolldownContext(ctx.dir)
-      await createWatcher(ctx.dir, reload, dispose)
+      await createWatcher(
+        Number(ctx.year),
+        Number(ctx.day),
+        ctx.dir,
+        reload,
+        dispose
+      )
     } else {
       const { reload, dispose } = await createESBuildContext(ctx.dir)
-      await createWatcher(ctx.dir, reload, dispose)
+      await createWatcher(
+        Number(ctx.year),
+        Number(ctx.day),
+        ctx.dir,
+        reload,
+        dispose
+      )
     }
   }
 }

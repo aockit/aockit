@@ -51,6 +51,6 @@ export default defineCommand({
     }
 
     const config = await conf.load(year)
-    return createDevContext({ dir, config, day, builder })
+    return createDevContext({ dir, config, day, builder, year })
   }
 })

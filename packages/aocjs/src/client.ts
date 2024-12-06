@@ -209,25 +209,7 @@ export class Client {
       }
 
       if (response.includes("You don't seem to be solving the right level.")) {
-        const problem = await this.getProblem(year, day)
-        const problemSplitByPart = problem.split('</article>')
-        let relevantProblemPart = problemSplitByPart[part]
-
-        if (!relevantProblemPart) {
-          throw new SubmissionError('Could not find correct answer in page')
-        }
-
-        relevantProblemPart = relevantProblemPart.split('<article')[0]
-        const match = /Your puzzle answer was <code>([^<]+)<\/code>/.exec(
-          relevantProblemPart
-        )
-
-        if (!match) {
-          throw new SubmissionError('Could not find correct answer in page')
-        }
-
-        const correctAnswer = match[1]
-        return String(correctAnswer) === solution
+        throw new SubmissionError('Not solving the right level')
       }
 
       if (response.includes('To play, please identify yourself')) {
