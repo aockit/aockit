@@ -12,16 +12,16 @@ function testFail(
   expected: string,
   recieved: string
 ) {
-  return console.log(
-    `${c.red(c.bold(c.inverse(` FAIL `)))} ${c.cyan(name)} ${c.gray(`#${num}`)}\n`,
+  return log.info(
+    `${c.red(c.bold(c.inverse(' FAIL ')))} ${c.cyan(name)} ${c.gray(`#${num}`)}\n`,
     c.green(`+ Expected: ${c.bold(expected)}\n`),
     c.red(`- Recieved: ${c.bold(recieved)}\n`)
   )
 }
 
 function testPass(name: string, num: number, message: string) {
-  return console.log(
-    `${c.green(c.bold(c.inverse(` PASS `)))} ${c.cyan(name)} ${c.gray(`#${num}`)} >`,
+  return log.info(
+    `${c.green(c.bold(c.inverse(' PASS ')))} ${c.cyan(name)} ${c.gray(`#${num}`)} >`,
     c.dim(c.bold(message))
   )
 }
@@ -89,3 +89,5 @@ function runTests(tests: Test[], context: Omit<SolutionContext, 'input'>) {
     }
   }
 }
+
+export default run

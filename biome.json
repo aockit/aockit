@@ -1,4 +1,19 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "extends": ["@taskylizard/biome-config"]
+  "extends": [
+    "@taskylizard/biome-config"
+  ],
+  "files": {
+    "ignore": [
+      "adventofcode/"
+    ]
+  },
+  "linter": {
+    "rules": {
+      "style": {
+        "noDefaultExport": "off",
+        "useNamingConvention": "off"
+      }
+    }
+  }
 }
