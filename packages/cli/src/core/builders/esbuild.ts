@@ -1,4 +1,4 @@
-import { type BuildOptions, context } from 'esbuild'
+import type { BuildOptions } from 'esbuild'
 import { join } from 'pathe'
 import { log } from '../utils'
 import type { BuilderContext } from '../types'
@@ -15,6 +15,12 @@ export async function createESBuildContext(
     outfile: join(dir, 'dist', 'index.js')
   }
 
+  const { context } = await import('esbuild').catch((error) => {
+    log.error(
+      "Couldn't find esbuild. Please install it with `npm install esbuild@0.24.0`"
+    )
+    throw error
+  })
   const build = await context(buildConfig)
 
   const reload = async (): Promise<void> =>

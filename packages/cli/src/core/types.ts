@@ -16,7 +16,7 @@ export interface Config {
       part2: Day
     }
   }
-  builder?: Builder
+  builder: null | Builder
 }
 
 export interface BuilderContext {

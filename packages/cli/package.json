@@ -15,7 +15,9 @@
     "access": "public"
   },
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "bin": {
     "aoc": "./dist/cli.mjs"
   },
@@ -23,13 +25,17 @@
     "build": "unbuild",
     "prepack": "unbuild"
   },
-  "keywords": ["aoc", "adventofcode"],
+  "keywords": [
+    "aoc",
+    "adventofcode"
+  ],
   "author": "taskylizard",
   "license": "MIT",
   "dependencies": {
-    "aocjs": "workspace:^",
     "@aockit/core": "workspace:^",
-    "chokidar": "^4.0.1",
+    "@clack/prompts": "^0.8.2",
+    "@parcel/watcher": "^2.5.0",
+    "aocjs": "workspace:^",
     "citty": "^0.1.6",
     "consola": "^3.2.3",
     "esbuild": "^0.24.0",

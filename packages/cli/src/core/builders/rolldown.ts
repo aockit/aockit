@@ -1,5 +1,4 @@
 import type { InputOptions, OutputOptions } from 'rolldown'
-import { rolldown } from 'rolldown'
 import { join } from 'pathe'
 import { colors } from 'consola/utils'
 import type { BuilderContext } from '../types'
@@ -26,6 +25,13 @@ export async function createRolldownContext(
     name: 'index',
     dir: join(dir, 'dist')
   }
+
+  const { rolldown } = await import('rolldown').catch((error) => {
+    log.error(
+      "Couldn't find Rolldown. Please install it with `npm install rolldown@0.14.0`"
+    )
+    throw error
+  })
 
   const build = await rolldown(inputConfig)
 

@@ -1,9 +1,10 @@
 import { existsSync } from 'node:fs'
 import { join } from 'pathe'
 import { defineCommand } from 'citty'
-import { createBuildContext } from '../core/build'
+import { createDevContext } from '../core/dev'
 import { config as conf } from '../core/io'
 import { scaffoldDay } from '../core/generators/day'
+import { scaffoldYear } from '../core/generators/year'
 
 export default defineCommand({
   meta: {
@@ -41,11 +42,15 @@ export default defineCommand({
     const { year, day, template, builder } = args
     const dir = join(year, day)
 
+    if (!existsSync(year)) {
+      await scaffoldYear(year)
+    }
+
     if (!existsSync(dir)) {
       await scaffoldDay(year, day, template)
     }
 
     const config = await conf.load(year)
-    return createBuildContext({ dir, config, day, builder })
+    return createDevContext({ dir, config, day, builder })
   }
 })

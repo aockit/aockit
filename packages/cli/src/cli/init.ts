@@ -1,10 +1,13 @@
 import { existsSync } from 'node:fs'
-import fsp from 'node:fs/promises'
 import { defineCommand } from 'citty'
-import { join } from 'pathe'
-import { log, generateConfig } from '../core/utils'
-import { generateReadme } from '../core/generators/year'
-import { config } from '../core/io'
+import * as p from '@clack/prompts'
+import { scaffoldYear } from '../core/generators/year'
+import { colors as c } from 'consola/utils'
+
+function onCancel() {
+  p.cancel('Operation cancelled.')
+  process.exit(0)
+}
 
 export default defineCommand({
   meta: {
@@ -20,24 +23,41 @@ export default defineCommand({
       .map((val: any, i) => val + i)
       .reverse()
 
-    let year: any = await log.prompt('What calendar year do you want to do?', {
-      type: 'select',
-      options: years.map((year) => ({ label: year, value: year }))
-    })
+    console.clear()
+    setTimeout(() => {
+      /** no-op */
+    }, 1000)
 
-    year = String(year!)
+    p.intro(c.bgGreenBright(c.black(' aockit ')))
+    const k = await p.group(
+      {
+        year: () =>
+          p.select({
+            message: 'What calendar year do you want to do?',
+            options: years.map((year) => ({ label: year, value: year }))
+          }),
+        builder: () =>
+          p.select({
+            message: 'Builder to use.',
+            options: [
+              { value: 'esbuild', label: 'esbuild' },
+              { value: 'jiti', label: 'jiti' },
+              { value: 'rolldown', label: 'rolldown' }
+            ]
+          })
+      },
+      { onCancel }
+    )
+
+    const year = String(k.year!)
 
     if (existsSync(year)) {
-      log.error(`${year} already exists, aborting.`)
+      p.log.error(`${year} already exists, aborting.`)
       process.exit(1)
     }
 
-    await fsp.mkdir(year)
-    await fsp.writeFile(join(year, '.aockit.json'), generateConfig(year))
-    await fsp.writeFile(
-      join(year, 'README.md'),
-      generateReadme(await config.load(year))
-    )
-    log.success(`Sucessfully scaffolded workspace for ${year}.`)
+    await scaffoldYear(year)
+
+    p.outro(`Successfully scaffolded workspace for ${year}.`)
   }
 })
