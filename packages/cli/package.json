@@ -1,6 +1,6 @@
 {
   "name": "@aockit/cli",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Polyglot CLI for Advent of Code",
   "repository": {
     "type": "git",
