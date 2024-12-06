@@ -8,32 +8,40 @@ import { createJitiContext } from './builders/jiti'
 import { createRolldownContext } from './builders/rolldown'
 import type { Builder, Config } from './types'
 import { log } from './utils'
-import { confirm, text } from '@clack/prompts'
+// import { confirm, text } from '@clack/prompts'
+
 const gitignore = existsSync(join('.gitignore'))
   ? readFileSync(join('.gitignore'), { encoding: 'utf8' })
       .split('\n')
       .filter(Boolean)
   : []
 
-const _createRenderer = () => {
-  const renderFooter = () => {
-    log.info(
-      `🦌 Press: ${c.green(c.bold('r'))} to reload • ${c.red(c.bold('q'))} to quit • ${c.magenta(c.bold('s'))} to submit`
-    )
-  }
-
-  const logWithClear = (...args: any[]) => {
-    console.clear()
-    // biome-ignore lint/suspicious/noConsoleLog: <explanation>
-    console.log(...args)
-    renderFooter()
-  }
-
-  return {
-    renderFooter,
-    logWithClear
-  }
+// Warn if .gitignore doesnt have input.txt
+if (gitignore.length > 0 && !gitignore.includes('**/input.txt')) {
+  log.warn(
+    '**/input.txt is not in your .gitignore file. Add the following: **/input.txt'
+  )
 }
+
+// const _createRenderer = () => {
+//   const renderFooter = () => {
+//     log.info(
+//       `🦌 Press: ${c.green(c.bold('r'))} to reload • ${c.red(c.bold('q'))} to quit • ${c.magenta(c.bold('s'))} to submit`
+//     )
+//   }
+//
+//   const logWithClear = (...args: any[]) => {
+//     console.clear()
+//     // biome-ignore lint/suspicious/noConsoleLog: <explanation>
+//     console.log(...args)
+//     renderFooter()
+//   }
+//
+//   return {
+//     renderFooter,
+//     logWithClear
+//   }
+// }
 
 const createWatcher = async (
   dir: string,
@@ -97,37 +105,35 @@ const createWatcher = async (
           log.info('Reloading.')
           await reload()
           break
-        case '\u0073': // 's' key for submit
-          try {
-            process.stdin.setRawMode(false)
-
-            // Prompt for solution text
-            const solution = await text({
-              message: 'Enter your solution text:',
-              placeholder: 'Type your solution here...',
-              validate(value) {
-                if (!value) return 'Solution cannot be empty!'
-              }
-            })
-
-            if (solution) {
-              // Confirm submission
-              const shouldSubmit = await confirm({
-                message: 'Are you sure you want to submit this solution?'
-              })
-
-              if (shouldSubmit) {
-                log.success('Solution submitted successfully!')
-                // Add your actual submission logic here
-                // For example, you might want to call an API, write to a file, etc.
-              } else {
-                log.info('Submission cancelled.')
-              }
-            }
-          } catch (error) {
-            log.error('Submission error:', error)
-          }
-          break
+        // case '\u0073': // 's' key for submit
+        //   try {
+        //     process.stdin.setRawMode(false)
+        //
+        //     // Prompt for solution text
+        //     const solution = await text({
+        //       message: 'Enter your solution text:',
+        //       placeholder: 'Type your solution here...',
+        //       validate(value) {
+        //         if (!value) return 'Solution cannot be empty!'
+        //       }
+        //     })
+        //
+        //     if (solution) {
+        //       // Confirm submission
+        //       const shouldSubmit = await confirm({
+        //         message: 'Are you sure you want to submit this solution?'
+        //       })
+        //
+        //       if (shouldSubmit) {
+        //         log.success('Solution submitted successfully!')
+        //       } else {
+        //         log.info('Submission cancelled.')
+        //       }
+        //     }
+        //   } catch (error) {
+        //     log.error('Submission error:', error)
+        //   }
+        //   break
         default:
           break
       }
@@ -135,7 +141,7 @@ const createWatcher = async (
 
   log.info('Started server, listening for changes...')
   log.info(
-    `🦌 Press: ${c.green(c.bold('r'))} to reload • ${c.red(c.bold('q'))} to quit • ${c.magenta(c.bold('s'))} to submit`
+    `🦌 Press: ${c.green(c.bold('r'))} to reload • ${c.red(c.bold('q'))} to quit`
   )
 
   // ui.renderFooter()

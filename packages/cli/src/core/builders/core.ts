@@ -2,7 +2,6 @@ import { Worker } from 'node:worker_threads'
 import { resolve } from 'pathe'
 import { debounce } from 'perfect-debounce'
 import { log } from '../utils'
-import { existsSync } from 'node:fs'
 
 export async function createWorkerContext(
   outfile: string,
@@ -15,13 +14,8 @@ export async function createWorkerContext(
   let worker: Worker | null = null
 
   function createWorker(): void {
-    if (!existsSync(outfile)) {
-      log.error(`[dev:worker:error] Output file does not exist: ${outfile}`)
-      return
-    }
-
     if (worker) {
-      deleteWorker() // Ensure previous worker is cleaned up
+      deleteWorker()
     }
 
     try {
@@ -71,9 +65,6 @@ export async function createWorkerContext(
     await reloadFn()
     createWorker()
   }, 100)
-
-  // Automatically create worker on initialization
-  createWorker()
 
   return { createWorker, reloadWorker, deleteWorker }
 }

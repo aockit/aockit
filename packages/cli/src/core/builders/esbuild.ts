@@ -12,7 +12,7 @@ export async function createESBuildContext(
     format: 'esm',
     platform: 'node',
     bundle: true,
-    outfile: join(dir, 'dist', 'index.js')
+    outfile: join(dir, 'dist', 'index.mjs')
   }
 
   const { context } = await import('esbuild').catch((error) => {
