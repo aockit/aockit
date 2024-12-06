@@ -3,6 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'aockit',
   description: 'Polyglot Advent of Code CLI',
+  base: '/aockit/',
   markdown: {
     theme: 'rose-pine-moon'
   },
