@@ -18,15 +18,6 @@ Install:
 [pnpm|npm|yarn|bun] install aocjs
 ```
 
-At this point, you'll have to add your Advent of Code browser session key, this requires a few more
-steps.
-
-1. Open [adventofcode.com](https://adventofcode.com) and log in.
-2. Open your Chrome or Firefox Devtools (F12).
-3. Go to Application tab.
-4. On the sidebar, under Storage section, expand Cookies and click on https://adventofcode.com.
-5. Now you're seeing 3 cookies, one of them must be named session. Copy it's value.
-
 ## Getting Started
 
 ```js
@@ -45,10 +36,9 @@ console.log(input); // Your input
 ## Implementation matrix
 
 - [x] Fetching input (`{year}/day/{day}/input`)
-- [ ] Submitting answers
-- [ ] Fetching private/global leaderboard
-- [ ] Ratelimits to reduce load on the site
-- [ ] Respect Eric's wishes for load wherever possible
+- [x] Submitting answers
+- [x] Fetching private/global leaderboard
+- [ ] Rate-limits to reduce load on the site
 
 ## License
 

@@ -1,5 +1,6 @@
 import fsp from 'node:fs/promises'
-import { join } from 'pathe'
+import { homedir } from 'node:os'
+import { dirname, join } from 'pathe'
 import type { Config } from './types'
 
 class FileOperationError extends Error {
@@ -102,4 +103,32 @@ export const readme = {
       )
     }
   }
+}
+
+const homeDir = homedir()
+const CACHE_DIR =
+  process.platform === 'darwin'
+    ? join(homeDir, 'Library', 'Caches', 'aockit')
+    : process.platform === 'win32'
+      ? join(homeDir, 'AppData', 'Local', 'aockit')
+      : process.platform === 'linux'
+        ? join(homeDir, '.cache', 'aockit')
+        : join(homeDir, '.aockit')
+
+async function read(year: string, day: string) {
+  const filePath = join(year, day)
+  const pathname = join(CACHE_DIR, filePath)
+  return await fsp.readFile(pathname, { encoding: 'utf-8' })
+}
+
+async function write(year: string, day: string, data: string) {
+  const filePath = join(year, day)
+  const pathname = join(CACHE_DIR, filePath)
+  await fsp.mkdir(dirname(pathname), { recursive: true })
+  return await fsp.writeFile(pathname, data)
+}
+
+export const cache = {
+  read,
+  write
 }

@@ -1,6 +1,6 @@
 import { config } from '../io'
 import type { Config } from '../types'
-import { generateConfig, toFixed } from '../utils'
+import { dedent, generateConfig, toFixed } from '../utils'
 import fsp from 'node:fs/promises'
 import { join } from 'pathe'
 
@@ -16,7 +16,7 @@ export async function scaffoldYear(year: string) {
 }
 
 export function generateDayBadges(config: Config): string {
-  return (
+  return dedent(
     Object.entries(config.days)
       // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
       .map((value) => {
@@ -67,7 +67,7 @@ export function generateResults(config: Config): string {
         totalStars++
       }
 
-      return `
+      return dedent`
  \`\`\`
  Day ${day}
  Time part 1: ${part1.time !== null && part1.solved ? `${toFixed(part1.time)}ms` : '-'}
@@ -78,7 +78,7 @@ export function generateResults(config: Config): string {
     })
     .join('\n\n')
 
-  const summary = `
+  const summary = dedent`
 \`\`\`
 Total stars: ${totalStars}/50
 Total time: ${toFixed(totalTime)}ms

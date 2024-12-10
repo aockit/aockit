@@ -1,55 +1,52 @@
-export interface SolutionContext {
+import type { BenchOptions } from 'tinybench'
+
+export interface Input {
   /**
    * Your puzzle's raw input.
    * @returns string
    */
-  input: string
+  raw: string
   /**
    * Reads your input file into "lines" or "groups".
-   * @returns string
+   * @returns string[]
    */
-  readInput: (mode: 'lines' | 'groups') => string[]
-  /**
-   * compareFn to sort two numbers by ascending order.
-   * @example [8,7,6,5,4].sort(asc) => [4,5,6,7,8]
-   * @returns number
-   */
-  asc: (a: number, b: number) => number
-  /**
-   * compareFn to sort two numbers by descending order.
-   * @example [4,5,6,78].sort(asc) => [8,7,6,5,4]
-   * @returns number
-   */
-  desc: (a: number, b: number) => number
-  /**
-   * Compares a key by a provided compareFn.
-   * @returns void
-   */
-  by: <T, K extends keyof T>(
-    key: K,
-    compareFn: (a: T[K], b: T[K]) => number
-  ) => void
+  read: (mode: 'lines' | 'groups') => string[]
 }
 
-export type Solution = (
-  context: SolutionContext
-) => string | number | bigint | void
+type SolutionResult = string | number | bigint | void
+export type Solution = (input: Input) => SolutionResult
 
-export interface Test {
+export interface TestContext {
   /** Test case result.*/
   name: string
   /** Input string, could be the example. */
   input: string
   /** Expected output. */
   expected: string | number
+  /** Solution function. */
   solution: Solution
 }
 
-export interface Solutions {
+export interface BenchContext {
+  /** Benchmark name. */
+  name: string
+  /** Benchmark function. */
+  solution: Solution
+}
+
+export interface Context {
   /** Part 1 solution.*/
   part1?: Solution
   /** Part 2 solution.*/
   part2?: Solution
   /** Test cases for your solutions.*/
-  tests?: Test[]
+  tests?: TestContext[]
+  /** Benchmark your solutions.*/
+  bench?: BenchContext[]
+  /** Options, used to configure the behavior of the runner. */
+  options?: {
+    /** Trim whitespace from input. */
+    trim?: boolean
+    benchOptions?: BenchOptions
+  }
 }

@@ -33,18 +33,22 @@
   "license": "MIT",
   "dependencies": {
     "@aockit/core": "workspace:^",
+    "@clack/core": "^0.3.5",
     "@clack/prompts": "^0.8.2",
     "@parcel/watcher": "^2.5.0",
     "aocjs": "workspace:^",
+    "c12": "^2.0.1",
     "citty": "^0.1.6",
     "consola": "^3.2.3",
     "esbuild": "^0.24.0",
     "execa": "^9.5.1",
     "jiti": "^2.4.1",
+    "log-update": "^6.1.0",
     "pathe": "^1.1.2",
     "perfect-debounce": "^1.0.0",
     "rolldown": "0.14.0",
-    "tinyexec": "^0.3.1"
+    "tinyexec": "^0.3.1",
+    "tinyrainbow": "^1.2.0"
   },
   "peerDependencies": {
     "esbuild": ">=0.24.0",

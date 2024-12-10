@@ -26,8 +26,13 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": ["dist"],
-  "keywords": ["aoc", "adventofcode"],
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "aoc",
+    "adventofcode"
+  ],
   "author": "taskylizard",
   "license": "MIT",
   "scripts": {
@@ -36,6 +41,7 @@
   },
   "dependencies": {
     "consola": "^3.2.3",
-    "pathe": "^1.1.2"
+    "pathe": "^1.1.2",
+    "tinybench": "^3.0.7"
   }
 }

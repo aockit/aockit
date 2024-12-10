@@ -1,9 +1,11 @@
 import fsp from 'node:fs/promises'
 import { colors as c } from 'consola/utils'
 import { join } from 'pathe'
-import { generateFileTree, log } from '../utils'
+import { accessible, generateFileTree, log } from '../utils'
 import { processTemplate } from '../templates'
 import { client } from '../client'
+import { cache } from '../io'
+import { scaffoldYear } from './year'
 
 export function generateCode(): string {
   return `import { run } from "@aockit/core";
@@ -35,7 +37,7 @@ export async function scaffoldDay(
     process.exit(1)
   }
 
-  const dir = join(year, day) // 2023/2
+  const dir = join(year, day) // e.g: 2023/2
   await fsp.mkdir(dir, { recursive: true })
 
   if (template)
@@ -46,8 +48,9 @@ export async function scaffoldDay(
   else await fsp.writeFile(join(dir, 'index.ts'), generateCode())
 
   log.info('Downloading input...')
-  const input = await client.getInput(Number(year), Number(day))
-  await fsp.writeFile(join(dir, 'input.txt'), input)
+  const input = await client.getInput(year, day)
+  if (!input.ok) throw input.errors
+  await cache.write(year, day, input.value)
   log.success('Downloaded input!')
 
   const readme = generateDayReadme(Number(year), Number(day))
@@ -59,4 +62,24 @@ export async function scaffoldDay(
   log.info('Your file tree should look like this:')
 
   console.info(tree)
+}
+
+export async function checkDay(year: string, day: string, template: string) {
+  const dir = join(year, day)
+  const inputPath = join(dir, 'input.txt')
+
+  if (!(await fsp.stat(year))) await scaffoldYear(year)
+  if (!(await fsp.stat(dir))) await scaffoldDay(year, day, template)
+
+  if (!(await accessible(inputPath))) {
+    let input = await cache.read(year, day)
+    if (!input) {
+      const data = await client.getInput(year, day)
+      if (!data.ok) throw data.errors
+      await cache.write(year, day, data.value)
+      input = data.value
+    }
+
+    await fsp.writeFile(inputPath, input)
+  }
 }

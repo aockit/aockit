@@ -3,7 +3,7 @@ import { join } from 'pathe'
 import { defineCommand } from 'citty'
 import { createDevContext } from '../core/dev'
 import { config as conf } from '../core/io'
-import { scaffoldDay } from '../core/generators/day'
+import { checkDay, scaffoldDay } from '../core/generators/day'
 import { scaffoldYear } from '../core/generators/year'
 
 export default defineCommand({
@@ -42,13 +42,7 @@ export default defineCommand({
     const { year, day, template, builder } = args
     const dir = join(year, day)
 
-    if (!existsSync(year)) {
-      await scaffoldYear(year)
-    }
-
-    if (!existsSync(dir)) {
-      await scaffoldDay(year, day, template)
-    }
+    await checkDay(year, day, template)
 
     const config = await conf.load(year)
     return createDevContext({ dir, config, day, builder, year })

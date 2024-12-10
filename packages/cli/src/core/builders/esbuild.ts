@@ -12,6 +12,7 @@ export async function createESBuildContext(
     format: 'esm',
     platform: 'node',
     bundle: true,
+    sourcemap: 'inline',
     outfile: join(dir, 'dist', 'index.mjs')
   }
 
