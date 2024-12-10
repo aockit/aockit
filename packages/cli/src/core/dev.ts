@@ -15,6 +15,7 @@ import { spinner } from './ui/spinner'
 import { crash, error, log, newline } from './ui/logger'
 import { loadConfig } from './config'
 import { config as conf } from './io'
+import { updateReadme } from './generators/readme'
 
 const gitignore = existsSync(join('.gitignore'))
   ? readFileSync(join('.gitignore'), { encoding: 'utf8' })
@@ -141,6 +142,7 @@ const createWatcher = async (
                 true
               await conf.save(year, c)
 
+              await updateReadme(year)
               s.stop('Solution submitted successfully!')
             } else {
               log('Submission cancelled.')

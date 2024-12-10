@@ -3,6 +3,7 @@ import path from 'node:path'
 import { template } from './lib'
 import { basename } from 'pathe'
 import { config } from '../io'
+import type { Builder } from '../types'
 
 export async function processTemplate(
   year: string,
@@ -46,7 +47,7 @@ export async function processTemplate(
 
       if (basename(sourcePath) === 'runner') {
         const conf = await config.load(year)
-        conf.days[Number(day)].builder = content
+        conf.days[Number(day)].builder = content as Builder
         await config.save(year, conf)
         return
       }
