@@ -1,20 +1,21 @@
 export type Builder = 'esbuild' | 'rolldown' | 'jiti'
 
-interface Day {
+interface Part {
   solved: boolean
   result: any // seems to be string, number blah
   time: null | number
+}
+
+interface Day {
   builder?: Builder
+  part1: Part
+  part2: Part
 }
 
 export interface Config {
   year: number
   days: {
-    [day: number]: {
-      runner: null | string
-      part1: Day
-      part2: Day
-    }
+    [day: number]: Day
   }
   builder: null | Builder
 }

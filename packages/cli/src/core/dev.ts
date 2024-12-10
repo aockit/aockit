@@ -14,6 +14,7 @@ import { parseResults } from './dev/parse-results'
 import { spinner } from './ui/spinner'
 import { crash, error, log, newline } from './ui/logger'
 import { loadConfig } from './config'
+import { config as conf } from './io'
 
 const gitignore = existsSync(join('.gitignore'))
   ? readFileSync(join('.gitignore'), { encoding: 'utf8' })
@@ -135,6 +136,11 @@ const createWatcher = async (
                 return
               }
 
+              const c = await conf.load(year)
+              c.days[Number(day) - 1][part === 1 ? 'part1' : 'part2'].solved =
+                true
+              await conf.save(year, c)
+
               s.stop('Solution submitted successfully!')
             } else {
               log('Submission cancelled.')
@@ -158,9 +164,9 @@ interface Context {
 }
 
 export async function createDevContext(ctx: Context): Promise<void> {
-  if (ctx.config.days[Number(ctx.day)].runner !== null) {
+  if (ctx.config.days[Number(ctx.day)].builder !== null) {
     const [cmd, ...cmdArgs] = ctx.config.days[Number(ctx.day)]
-      .runner!.trim()
+      .builder!.trim()
       .split(' ')
     const reload = debounce(async () => {
       try {

@@ -46,7 +46,7 @@ export async function processTemplate(
 
       if (basename(sourcePath) === 'runner') {
         const conf = await config.load(year)
-        conf.days[Number(day)].runner = content
+        conf.days[Number(day)].builder = content
         await config.save(year, conf)
         return
       }
