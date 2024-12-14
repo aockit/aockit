@@ -7,13 +7,13 @@ export interface Input {
    */
   raw: string
   /**
-   * Reads your input file into "lines" or "groups".
+   * Reads your input file into "lines" (\n) or "groups" (\n\n).
    * @returns string[]
    */
   read: (mode: 'lines' | 'groups') => string[]
 }
 
-type SolutionResult = string | number | bigint | void
+type SolutionResult = string | number | bigint
 export type Solution = (input: Input) => SolutionResult
 
 export interface TestContext {
@@ -22,7 +22,7 @@ export interface TestContext {
   /** Input string, could be the example. */
   input: string
   /** Expected output. */
-  expected: string | number
+  expected: SolutionResult
   /** Solution function. */
   solution: Solution
 }

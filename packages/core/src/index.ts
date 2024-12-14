@@ -6,7 +6,7 @@ import { createConsola } from 'consola'
 import { Bench } from 'tinybench'
 
 export { Context }
-export { by, asc, desc } from './utils'
+export * from './utils'
 
 const log = createConsola({ defaults: { tag: 'solution' } })
 const args = process.argv.slice(2)
