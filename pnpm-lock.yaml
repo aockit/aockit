@@ -105,6 +105,9 @@ importers:
       consola:
         specifier: ^3.2.3
         version: 3.2.3
+      mitata:
+        specifier: ^1.0.21
+        version: 1.0.21
       pathe:
         specifier: ^1.1.2
         version: 1.1.2
@@ -2236,6 +2239,9 @@ packages:
   minizlib@2.1.2:
     resolution: {integrity: sha512-bAxsR8BVfj60DWXHE3u30oHzfl4G7khkSuPW+qvpd7jFRHm7dLxOjUk1EHACJ/hxLY8phGJ0YhYHZo7jil7Qdg==}
     engines: {node: '>= 8'}
+
+  mitata@1.0.21:
+    resolution: {integrity: sha512-5HnbQJpz0Ub/7x7lxaxPhd3U3zXr7rD+24FIgEp/hjVE5wz6ye/pQRBrgH3MUK8KLy/FfPy/yfZbpi0sbmsNFg==}
 
   mitt@3.0.1:
     resolution: {integrity: sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==}
@@ -5167,6 +5173,8 @@ snapshots:
     dependencies:
       minipass: 3.3.6
       yallist: 4.0.0
+
+  mitata@1.0.21: {}
 
   mitt@3.0.1: {}
 

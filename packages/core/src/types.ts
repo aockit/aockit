@@ -1,5 +1,3 @@
-import type { BenchOptions } from 'tinybench'
-
 export interface Input {
   /**
    * Your puzzle's raw input.
@@ -13,8 +11,31 @@ export interface Input {
   read: (mode: 'lines' | 'groups') => string[]
 }
 
-type SolutionResult = string | number | bigint
+export type SolutionResult = string | number | bigint
 export type Solution = (input: Input) => SolutionResult
+
+export type MaybePromise<T> = T | Promise<T>
+
+export type MitataCallback = (
+  mitata: typeof import('mitata'),
+  input: Input
+) => MaybePromise<void>
+export type TinybenchCallback = (
+  tinybench: typeof import('tinybench'),
+  input: Input
+) => MaybePromise<void>
+
+export interface MitataContext {
+  tool: 'mitata'
+  bench: MitataCallback
+}
+
+export interface TinybenchContext {
+  tool: 'tinybench'
+  bench: TinybenchCallback
+}
+
+export type BenchContext = MitataContext | TinybenchContext
 
 export interface TestContext {
   /** Test case result.*/
@@ -27,13 +48,6 @@ export interface TestContext {
   solution: Solution
 }
 
-export interface BenchContext {
-  /** Benchmark name. */
-  name: string
-  /** Benchmark function. */
-  solution: Solution
-}
-
 export interface Context {
   /** Part 1 solution.*/
   part1?: Solution
@@ -42,11 +56,10 @@ export interface Context {
   /** Test cases for your solutions.*/
   tests?: TestContext[]
   /** Benchmark your solutions.*/
-  bench?: BenchContext[]
+  bench?: BenchContext
   /** Options, used to configure the behavior of the runner. */
   options?: {
     /** Trim whitespace from input. */
     trim?: boolean
-    benchOptions?: BenchOptions
   }
 }

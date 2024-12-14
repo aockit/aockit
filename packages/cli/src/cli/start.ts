@@ -1,10 +1,10 @@
-import { existsSync } from 'node:fs'
 import { join } from 'pathe'
 import { defineCommand } from 'citty'
 import { createDevContext } from '../core/dev'
-import { config as conf } from '../core/io'
-import { checkDay, scaffoldDay } from '../core/generators/day'
-import { scaffoldYear } from '../core/generators/year'
+import { data as conf } from '../core/io'
+import { checkDay } from '../core/generators/day'
+import type { Runner } from '../core/types'
+import { log } from '../core/dev/ui/logger'
 
 export default defineCommand({
   meta: {
@@ -30,21 +30,39 @@ export default defineCommand({
         'Template to use from the name of folder in templates/ folder.',
       alias: 't'
     },
-    builder: {
+    runner: {
       type: 'string',
       description: 'Builder to use.',
+      alias: 'r',
+      valueHint: 'esbuild|rolldown|jiti|<any custom command>'
+    },
+    builder: {
+      required: false,
+      type: 'string',
+      description: 'DEPRECATED: use --runner instead.',
       alias: 'b',
-      default: 'esbuild',
       valueHint: 'esbuild|rolldown|jiti'
     }
   },
   async run({ args }) {
-    const { year, day, template, builder } = args
+    const { year, day, template, runner: _runner, builder } = args
+    if (builder)
+      log('DEPRECATED: --builder is deprecated, use --runner instead.')
+
+    const runner = (_runner ?? builder) as Runner
     const dir = join(year, day)
 
     await checkDay(year, day, template)
 
-    const config = await conf.load(year)
-    return createDevContext({ dir, config, day, builder, year })
+    const data = await conf.load(year)
+    return createDevContext({
+      cli: {
+        dir,
+        day,
+        runner,
+        year
+      },
+      data
+    })
   }
 })

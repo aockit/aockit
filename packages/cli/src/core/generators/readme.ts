@@ -1,9 +1,9 @@
 import { generateResults, generateDayBadges } from '../generators/year'
-import { config, readme } from '../io'
+import { data, readme } from '../io'
 import { log } from '../utils'
 
 export async function updateReadme(year: string) {
-  const conf = await config.load(year)
+  const conf = await data.load(year)
   const badges = generateDayBadges(conf)
   const results = generateResults(conf)
 

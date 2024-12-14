@@ -28,3 +28,4 @@
 **/*.ez
 **/erl_crash.dump
 testbeds/
+trash

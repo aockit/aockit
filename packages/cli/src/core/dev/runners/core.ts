@@ -1,26 +1,37 @@
 import { Worker } from 'node:worker_threads'
 import { resolve } from 'pathe'
 import { debounce } from 'perfect-debounce'
-import { log } from '../utils'
+import * as log from '../ui/logger'
+
+export interface RunnerContext {
+  reload: (task?: 'test' | 'bench') => Promise<void>
+  dispose?: () => Promise<void> | void
+  exec?: boolean
+}
 
 export async function createWorkerContext(
+  dir: string,
   outfile: string,
-  reloadFn: () => Promise<void>
-): Promise<{
-  createWorker: () => void
-  reloadWorker: () => Promise<void>
-  deleteWorker: () => void
-}> {
+  reloadFn: (task?: 'test' | 'bench') => Promise<void>
+) {
   let worker: Worker | null = null
+  const inputFile = resolve(dir, 'input.txt')
 
-  function createWorker(): void {
+  function createWorker(task?: 'test' | 'bench'): void {
     if (worker) {
       deleteWorker()
     }
 
     try {
+      const argv = [`--input=${inputFile}`]
+      // Add --bench or --test flag if either is true or add nothing
+      if (task) argv.push(`--${task}`)
+
+      log.log(argv.toString())
+
       worker = new Worker(resolve(outfile), {
-        execArgv: ['--enable-source-maps'],
+        execArgv: ['--enable-source-maps', '--'],
+        argv,
         workerData: {},
         stderr: true
       })
@@ -36,8 +47,6 @@ export async function createWorkerContext(
       worker.stderr.on('data', (data) => {
         log.error(`[dev:worker:stderr] ${data.toString().trim()}`)
       })
-
-      log.debug(`Worker created successfully: ${outfile}`)
     } catch (error) {
       log.error(
         `[dev:worker:error] Failed to create worker: ${error instanceof Error ? error.message : error}`
@@ -60,11 +69,11 @@ export async function createWorkerContext(
     }
   }
 
-  const reloadWorker = debounce(async () => {
+  const reload = debounce(async (task?: 'test' | 'bench') => {
     deleteWorker()
-    await reloadFn()
-    createWorker()
+    await reloadFn(task)
+    createWorker(task)
   }, 100)
 
-  return { createWorker, reloadWorker, deleteWorker }
+  return { createWorker, reloadWorker: reload, deleteWorker }
 }

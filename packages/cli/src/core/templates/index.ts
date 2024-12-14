@@ -2,8 +2,8 @@ import fsp from 'node:fs/promises'
 import path from 'node:path'
 import { template } from './lib'
 import { basename } from 'pathe'
-import { config } from '../io'
-import type { Builder } from '../types'
+import { data } from '../io'
+import type { Runner } from '../types'
 
 export async function processTemplate(
   year: string,
@@ -46,9 +46,9 @@ export async function processTemplate(
       const content = await fsp.readFile(sourcePath, 'utf8')
 
       if (basename(sourcePath) === 'runner') {
-        const conf = await config.load(year)
-        conf.days[Number(day)].builder = content as Builder
-        await config.save(year, conf)
+        const conf = await data.load(year)
+        conf.days[Number(day)].config!.runner = content as Runner
+        await data.save(year, conf)
         return
       }
 

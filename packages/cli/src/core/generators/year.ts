@@ -1,24 +1,23 @@
-import { config } from '../io'
-import type { Config } from '../types'
-import { dedent, generateConfig, toFixed } from '../utils'
+import { data } from '../io'
+import type { Data } from '../types'
+import { dedent, generateData, toFixed } from '../utils'
 import fsp from 'node:fs/promises'
 import { join } from 'pathe'
 
 export async function scaffoldYear(year: string) {
   return await Promise.allSettled([
     await fsp.mkdir(year),
-    await fsp.writeFile(join(year, '.aockit.json'), generateConfig(year)),
+    await fsp.writeFile(join(year, '.aockit.json'), generateData(year)),
     await fsp.writeFile(
       join(year, 'README.md'),
-      generateReadme(await config.load(year))
+      generateReadme(await data.load(year))
     )
   ])
 }
 
-export function generateDayBadges(config: Config): string {
+export function generateDayBadges(config: Data): string {
   return dedent(
     Object.entries(config.days)
-      // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
       .map((value) => {
         const { part1, part2 } = value[1]
         const day = value[0].padStart(2, '0')
@@ -40,12 +39,11 @@ export function generateDayBadges(config: Config): string {
   )
 }
 
-export function generateResults(config: Config): string {
+export function generateResults(config: Data): string {
   let totalTime = 0
   let totalStars = 0
 
   const results = Object.entries(config.days)
-    // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
     .map((value) => {
       const { part1, part2 } = value[1]
       const day = value[0].padStart(2, '0')
@@ -88,7 +86,7 @@ Total time: ${toFixed(totalTime)}ms
   return [results, summary].join('\n\n')
 }
 
-export function generateReadme(config: Config): string {
+export function generateReadme(config: Data): string {
   const badges = generateDayBadges(config)
   const results = generateResults(config)
 

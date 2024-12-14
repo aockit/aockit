@@ -1,4 +1,4 @@
-import type { Task } from './ui/tasks'
+import type { Task } from './dev/ui/tasks'
 import { loadConfig as _loadConfig } from 'c12'
 
 interface Config {

@@ -1,9 +1,8 @@
-import { join, resolve } from 'pathe'
-import { colors } from 'consola/utils'
-import type { BuilderContext } from '../types'
-import { log } from '../utils'
+import { resolve } from 'pathe'
+import type { RunnerContext } from './core'
+import * as log from '../ui/logger'
 
-export async function createJitiContext(dir: string): Promise<BuilderContext> {
+export async function createJitiContext(dir: string): Promise<RunnerContext> {
   const { createJiti } = await import('jiti').catch((error) => {
     log.error(
       "Couldn't find Jiti. Please install it with `npm install jiti@2.4.1`"
@@ -11,14 +10,12 @@ export async function createJitiContext(dir: string): Promise<BuilderContext> {
     throw error
   })
   const path = resolve(dir)
-  log.info(
-    `Running with Jiti... ${colors.yellow('This is experimental and may not work.')}`
-  )
   const jiti = createJiti(path, {
     fsCache: false,
-    moduleCache: false
+    moduleCache: false,
+    sourceMaps: true
   })
-  const resolved = jiti.esmResolve(resolve(join(path, 'index.ts')))
+  const resolved = jiti.esmResolve(resolve(path, 'index.ts'))
 
   return {
     reload: async () => {

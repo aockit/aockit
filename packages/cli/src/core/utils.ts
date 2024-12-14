@@ -1,6 +1,6 @@
 import fsp from 'node:fs/promises'
 import consola from 'consola'
-import type { Config } from './types'
+import type { Data } from './types'
 import { extname, join } from 'pathe'
 import { colors as c } from 'consola/utils'
 
@@ -8,7 +8,7 @@ export const log = consola.create({ defaults: { tag: '🎄' } })
 export const toFixed = (value: number, precision: number = 3) =>
   Number(value.toFixed(precision))
 
-export function generateConfig(year: string): string {
+export function generateData(year: string): string {
   return JSON.stringify(
     {
       year: Number(year),
@@ -21,9 +21,8 @@ export function generateConfig(year: string): string {
             part2: { solved: false, result: null, time: null }
           }
         ])
-      ),
-      builder: null
-    } satisfies Config,
+      )
+    } satisfies Data,
     null,
     2
   )
@@ -51,7 +50,6 @@ export async function generateFileTree(
   // Read directory contents
   const files = await fsp.readdir(dirPath, { recursive: true })
 
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
   files.forEach(async (file, index) => {
     const fullPath = join(dirPath, file)
     const stats = await fsp.stat(fullPath)

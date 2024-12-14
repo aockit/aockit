@@ -1,4 +1,4 @@
-export type Builder = 'esbuild' | 'rolldown' | 'jiti'
+export type Runner = 'esbuild' | 'rolldown' | 'jiti' | (string & {})
 
 interface Part {
   solved: boolean
@@ -7,22 +7,21 @@ interface Part {
 }
 
 interface Day {
-  builder?: Builder
+  config?: {
+    runner?: Runner
+  }
   part1: Part
   part2: Part
 }
 
-export interface Config {
+export interface Data {
   year: number
   days: {
     [day: number]: Day
   }
-  builder: null | Builder
-}
-
-export interface BuilderContext {
-  reload: () => Promise<void>
-  dispose: () => Promise<void> | void
+  config?: {
+    runner?: Runner
+  }
 }
 
 export type Ok<T> = {

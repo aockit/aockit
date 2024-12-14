@@ -1,21 +1,20 @@
 import { existsSync, readFileSync } from 'node:fs'
+import { confirm, select, text } from '@clack/prompts'
 import { colors as c } from 'consola/utils'
-import { join, relative, resolve } from 'pathe'
-import { debounce } from 'perfect-debounce'
-import { x, type NonZeroExitError } from 'tinyexec'
-import { createESBuildContext } from './builders/esbuild'
-import { createJitiContext } from './builders/jiti'
-import { createRolldownContext } from './builders/rolldown'
-import type { Builder, Config } from './types'
-import { confirm, text, select } from '@clack/prompts'
+import { join, relative } from 'pathe'
 import { client } from './client'
-import { registerTasks } from './ui/tasks'
-import { parseResults } from './dev/parse-results'
-import { spinner } from './ui/spinner'
-import { crash, error, log, newline } from './ui/logger'
 import { loadConfig } from './config'
-import { config as conf } from './io'
+import type { RunnerContext } from './dev/runners/core'
+import { createESBuildContext } from './dev/runners/esbuild'
+import { createJitiContext } from './dev/runners/jiti'
+import { createRolldownContext } from './dev/runners/rolldown'
+import * as log from './dev/ui/logger'
+import { spinner } from './dev/ui/spinner'
+import { registerTasks } from './dev/ui/tasks'
 import { updateReadme } from './generators/readme'
+import { data as conf } from './io'
+import type { Data, Runner } from './types'
+import { createExecContext } from './dev/runners/exec'
 
 const gitignore = existsSync(join('.gitignore'))
   ? readFileSync(join('.gitignore'), { encoding: 'utf8' })
@@ -28,32 +27,36 @@ if (
   gitignore.length > 0 &&
   !(gitignore.includes('**/input.txt') || gitignore.includes('input.txt'))
 ) {
-  log(
+  log.warn(
     'input.txt is not in your .gitignore file. Add the following: **/input.txt'
   )
 }
 
-const createWatcher = async (
+async function createWatcher(
   year: string,
   day: string,
   dir: string,
-  reload: () => Promise<void>,
-  dispose?: () => Promise<void> | void
-): Promise<void> => {
+  _runner:
+    | ((dir: string) => Promise<RunnerContext>)
+    | (() => Promise<RunnerContext>)
+) {
   const watcher = await import('@parcel/watcher').catch((error) =>
-    crash(`[dev:watcher:error] Failed to load @parcel/watcher ${error}`)
+    log.crash(`[dev:watcher:error] Failed to load @parcel/watcher ${error}`)
   )
+
+  const runner = await _runner(dir)
 
   const _watcher = await watcher.subscribe(
     dir,
     (error, events) => {
-      if (error) {
-        crash(`[dev:watcher:error] ${error}`)
-      }
+      if (error) log.error(`[dev:watcher:error] ${error}`)
+
       events.forEach(async (event) => {
         if (event.type === 'update') {
-          log(`[dev:watcher:change]: ${relative(process.cwd(), event.path)}`)
-          await reload()
+          log.log(
+            `[dev:watcher:change]: ${relative(process.cwd(), event.path)}`
+          )
+          await runner.reload()
         }
       })
     },
@@ -80,10 +83,10 @@ const createWatcher = async (
         label: 'Quit',
         color: 'red',
         handler: async () => {
-          log('Exiting.')
+          log.log('Exiting.')
           unregisterTasks()
           _watcher.unsubscribe()
-          await dispose?.()
+          await runner.dispose?.()
           process.exit(0)
         }
       },
@@ -92,8 +95,28 @@ const createWatcher = async (
         label: 'Reload',
         color: 'green',
         handler: async () => {
-          log('Reloading.')
-          await reload()
+          log.log('Reloading.')
+          await runner.reload()
+        }
+      },
+      {
+        keys: ['t'],
+        label: 'Test',
+        color: 'redBright',
+        disabled: runner.exec,
+        handler: async () => {
+          log.log('Reloading.')
+          await runner.reload('test')
+        }
+      },
+      {
+        keys: ['b'],
+        label: 'Bench',
+        color: 'greenBright',
+        disabled: runner.exec,
+        handler: async () => {
+          log.log('Reloading.')
+          await runner.reload('bench')
         }
       },
       {
@@ -101,6 +124,9 @@ const createWatcher = async (
         label: 'Submit',
         color: 'magenta',
         handler: async () => {
+          await runner.dispose?.()
+
+          process.stdin.setRawMode(true)
           const part = await select({
             message: 'Select a part to submit',
             options: [
@@ -133,7 +159,7 @@ const createWatcher = async (
 
               if (!request.ok) {
                 s.stop()
-                log(`Couldn't submit solution: ${request.errors}`)
+                log.error(`Couldn't submit solution: ${request.errors}`)
                 return
               }
 
@@ -145,81 +171,60 @@ const createWatcher = async (
               await updateReadme(year)
               s.stop('Solution submitted successfully!')
             } else {
-              log('Submission cancelled.')
+              log.log('Submission cancelled.')
             }
           }
         }
       }
     ]
   })
-  log('Started server, listening for changes...')
+  log.log('Started server, listening for changes...')
 
   const unregisterTasks = registerTasks(config.tasks)
+
+  return () => {
+    unregisterTasks()
+    _watcher.unsubscribe()
+    runner.dispose?.()
+  }
 }
 
 interface Context {
-  config: Config
-  dir: string
-  year: string
-  day: string
-  builder: string
+  data: Data
+  cli: {
+    dir: string
+    year: string
+    day: string
+    runner: Runner
+  }
 }
 
 export async function createDevContext(ctx: Context): Promise<void> {
-  if (ctx.config.days[Number(ctx.day)].builder !== null) {
-    const [cmd, ...cmdArgs] = ctx.config.days[Number(ctx.day)]
-      .builder!.trim()
-      .split(' ')
-    const reload = debounce(async () => {
-      try {
-        // Start a spinner
-        const s = spinner('stars')
-        s.start('Running your solution')
-        const proc = await x(cmd, cmdArgs, {
-          nodeOptions: { cwd: resolve(ctx.dir) }
-        })
+  const runner =
+    // Resolve from: cli args -> day config -> year config -> default
+    ctx.cli.runner ??
+    ctx.data.days[Number(ctx.cli.day)].config?.runner ??
+    ctx.data.config?.runner
+  const year = ctx.cli.year
+  const day = ctx.cli.day
+  const dir = ctx.cli.dir
 
-        s.stop()
+  const isExperimenralRunner = runner === 'jiti' || runner === 'rolldown'
+  if (isExperimenralRunner)
+    log.log(
+      `Running with ${c.red(runner)} runner, this is an experimental feature and may not work as expected.`
+    )
+  else log.log(`Runner: ${c.green(runner)}`)
 
-        if (proc.exitCode !== 0) {
-          error(`The command failed. stderr: ${proc.stderr}`)
-        } else {
-          const stdout = proc.stdout.trim()
-          // Try parsing the results
-          const contents = parseResults(stdout)
-
-          if (contents.ok) {
-            log(
-              `Part ${c.cyan('1')} ${c.gray('(')}${c.magenta(`${contents.value.part1.time.toFixed()}ms`)}${c.gray(')')}: ${contents.value.part1.result}`
-            )
-            log(
-              `Part ${c.cyan('2')} ${c.gray('(')}${c.magenta(`${contents.value.part2.time.toFixed()}ms`)}${c.gray(')')}: ${contents.value.part2.result}`
-            )
-          } else {
-            log(stdout !== '' ? proc.stdout : '[No output]')
-          }
-
-          log(`Run completed with exit code ${proc.exitCode}`)
-          newline()
-        }
-      } catch (_error) {
-        const errno = _error as NonZeroExitError
-        error(`The command failed. stderr: ${errno.result} (${errno.exitCode})`)
-        throw error
-      }
-    }, 100)
-    await createWatcher(ctx.year, ctx.day, ctx.dir, reload)
+  if (runner === 'jiti') await createWatcher(year, day, dir, createJitiContext)
+  else if (runner === 'rolldown')
+    await createWatcher(year, day, dir, createRolldownContext)
+  else if (runner === 'esbuild')
+    await createWatcher(year, day, dir, createESBuildContext)
+  else if (runner) {
+    const runner = ctx.data.days[Number(day)].config!.runner!.trim()
+    await createWatcher(year, day, dir, () => createExecContext(dir, runner))
   } else {
-    const builder = (ctx.config.builder || ctx.builder) as Builder
-    if (builder === 'jiti') {
-      const { reload, dispose } = await createJitiContext(ctx.dir)
-      await createWatcher(ctx.year, ctx.day, ctx.dir, reload, dispose)
-    } else if (builder === 'rolldown') {
-      const { reload, dispose } = await createRolldownContext(ctx.dir)
-      await createWatcher(ctx.year, ctx.day, ctx.dir, reload, dispose)
-    } else {
-      const { reload, dispose } = await createESBuildContext(ctx.dir)
-      await createWatcher(ctx.year, ctx.day, ctx.dir, reload, dispose)
-    }
+    log.crash(`[dev:watcher:error] Runner '${runner}' not found`)
   }
 }

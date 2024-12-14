@@ -1,10 +1,10 @@
 import readline from 'node:readline'
-import { log } from '../utils'
+import { log } from '../../utils'
 import { onKeyPress } from './keypress'
 import { colorize, type ColorName, colors as c } from 'consola/utils'
 import { x } from 'tinyexec'
 
-type HandlerContext = {
+type TaskHandlerContext = {
   year: number
   day: number
   x: typeof x
@@ -15,7 +15,7 @@ export interface Task {
   label: string
   color: ColorName
   disabled?: boolean
-  handler: (context: HandlerContext) => void | Promise<void>
+  handler: (context: TaskHandlerContext) => void | Promise<void>
 }
 
 export function registerTasks(options: Task[]) {
@@ -23,15 +23,17 @@ export function registerTasks(options: Task[]) {
     const instructions = options
       .filter(({ disabled }) => !disabled)
       .map(
-        ({ keys, label, color }) => `${colorize(color, keys[0])} to ${label}`
+        ({ keys, label, color }) =>
+          `${colorize(color, keys[0])} to ${colorize('bold', label)}`
       )
 
     const DEER_PREFIX = `🦌 Press${c.gray(':')} `
     const SEPERATOR = c.gray('•')
     let stringifiedInstructions = instructions.join(` ${SEPERATOR} `)
 
-    const textLength = stringifiedInstructions.length
-    const willWrap = textLength > process.stdout.columns
+    const textLength = DEER_PREFIX.length + stringifiedInstructions.length
+    // NOTE: I wasn't multiplying with 3 before but it just seems process.stdout.columns is not accurate
+    const willWrap = textLength > process.stdout.columns * 3
 
     if (willWrap) {
       stringifiedInstructions = [
@@ -61,7 +63,7 @@ export function registerTasks(options: Task[]) {
     for (const { keys, handler } of options) {
       if (keys.includes(char)) {
         try {
-          const context: HandlerContext = {
+          const context: TaskHandlerContext = {
             year: new Date().getFullYear(),
             day: new Date().getDate(),
             x

@@ -22,6 +22,7 @@
     "aoc": "./dist/cli.mjs"
   },
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "build": "unbuild",
     "prepack": "unbuild"
   },

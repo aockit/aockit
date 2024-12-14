@@ -5,11 +5,15 @@
   ],
   "files": {
     "ignore": [
-      "adventofcode/"
+      "testbeds/",
+      "trash/"
     ]
   },
   "linter": {
     "rules": {
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off"
+      },
       "style": {
         "noDefaultExport": "off",
         "useNamingConvention": "off"

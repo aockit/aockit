@@ -1,17 +1,31 @@
 import { readFileSync } from 'node:fs'
 import { performance } from 'node:perf_hooks'
 import type { Context, Input, Solution, TestContext } from './types'
-import { colors as c } from 'consola/utils'
-import { createConsola } from 'consola'
-import { Bench } from 'tinybench'
+import { c, log } from './util'
+import { createBenchRunner } from './bench/runner'
+import { parseArgs } from 'node:util'
 
-export { Context }
+export { Context, Solution }
 export * from './utils'
 
-const log = createConsola({ defaults: { tag: 'solution' } })
-const args = process.argv.slice(2)
-const isTestMode = args.includes('--test')
-const isBenchMode = args.includes('--bench')
+const args = parseArgs({
+  options: {
+    input: {
+      type: 'string'
+    },
+    test: {
+      type: 'boolean',
+      default: false
+    },
+    bench: {
+      type: 'boolean',
+      default: false
+    }
+  }
+})
+const isTestMode = args.values.test
+const isBenchMode = args.values.bench
+const inputPath = args.values.input
 
 function testFail(
   name: string,
@@ -38,8 +52,11 @@ function testPass(name: string, num: number, message: string) {
  * @param ctx The context object. See {@link Context}.
  * @returns void
  */
-export function run(ctx: Context): void {
-  let contents = readFileSync(new URL('../input.txt', import.meta.url), 'utf8')
+export async function run(ctx: Context): Promise<void> {
+  let contents = readFileSync(
+    inputPath || new URL('../input.txt', import.meta.url),
+    'utf8'
+  )
   if (ctx.options?.trim) contents = contents.trim()
 
   const input: Input = {
@@ -53,11 +70,12 @@ export function run(ctx: Context): void {
   if (isTestMode) {
     if (!ctx.tests || ctx.tests.length === 0)
       throw new Error('No tests found to run.')
-    runTests(ctx.tests, input)
+    runTests(ctx.tests)
   } else if (isBenchMode) {
-    if (!ctx.bench || ctx.bench.length === 0)
-      throw new Error('No benchmarks found to run.')
-    runBench(ctx, input)
+    if (!ctx.bench) throw new Error('No benchmarks found to run.')
+    // Wait until benchmarking is done, then exit
+    // This is to prevent the process from exiting before the benchmarking is done
+    await createBenchRunner(ctx, input).then(() => process.exit(0))
   } else {
     if (ctx.part1) runSolution(ctx.part1, input, 1)
     if (ctx.part2) runSolution(ctx.part2, input, 2)
@@ -76,9 +94,16 @@ function runSolution(solution: Solution, context: Input, part: 1 | 2): void {
   )
 }
 
-function runTests(tests: TestContext[], context: Omit<Input, 'input'>) {
+function runTests(tests: TestContext[]) {
   for (const [i, { name, input, expected, solution }] of tests.entries()) {
-    const result = solution({ ...context, raw: input })
+    const inp: Input = {
+      raw: input,
+      read(mode) {
+        const filter = mode === 'groups' ? '\n\n' : '\n'
+        return input.split(filter).filter(Boolean)
+      }
+    }
+    const result = solution(inp)
 
     if (result === expected) {
       testPass(name, i, `Result: ${result}`)
@@ -86,27 +111,6 @@ function runTests(tests: TestContext[], context: Omit<Input, 'input'>) {
       testFail(name, i, expected.toString(), String(result))
     }
   }
-}
-
-function runBench(context: Context, input: Input) {
-  const bench = new Bench(context.options?.benchOptions)
-
-  for (const { name, solution } of context.bench!)
-    bench.add(name, () => {
-      solution(input)
-    })
-
-  log.info('Running benchmarks...', c.gray('(this may take a while)'))
-  bench.run().then(() => {
-    for (const task of bench.tasks) {
-      log.info(
-        `${c.green(c.bold(c.inverse(' BENCH ')))} ${c.cyan(task.name)}: Mean time: ${c.magenta(
-          `${task.result?.latency.mean.toFixed(3)}ms`
-        )} (${task.result?.latency.samples.length} samples)`
-      )
-    }
-  })
-  console.table(bench.table())
 }
 
 export default run

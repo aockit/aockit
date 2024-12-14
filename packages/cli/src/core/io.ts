@@ -1,7 +1,7 @@
 import fsp from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { dirname, join } from 'pathe'
-import type { Config } from './types'
+import type { Data } from './types'
 
 class FileOperationError extends Error {
   constructor(
@@ -13,14 +13,14 @@ class FileOperationError extends Error {
   }
 }
 
-export const config = {
+export const data = {
   /**
    * Load configuration from .aockit.json
    * @param year - The year directory to load config from
    * @returns Parsed configuration object
    * @throws {FileOperationError} If file reading or parsing fails
    */
-  load: async (year: string): Promise<Config> => {
+  load: async (year: string): Promise<Data> => {
     try {
       const filePath = join(year, '.aockit.json')
       const rawData = await fsp.readFile(filePath, { encoding: 'utf-8' })
@@ -28,7 +28,7 @@ export const config = {
       try {
         const parsedConfigData = JSON.parse(rawData)
 
-        return parsedConfigData as Config
+        return parsedConfigData as Data
       } catch (parseError) {
         throw new FileOperationError('Invalid JSON configuration', parseError)
       }
@@ -46,7 +46,7 @@ export const config = {
    * @param _config - Configuration object to save
    * @throws {FileOperationError} If file writing fails
    */
-  save: async (year: string, _config: Config): Promise<void> => {
+  save: async (year: string, _config: Data): Promise<void> => {
     try {
       const filePath = join(year, '.aockit.json')
       const data = JSON.stringify(_config, null, 2)
