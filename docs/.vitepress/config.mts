@@ -1,4 +1,6 @@
 import { defineConfig } from 'vitepress'
+import { version as aocjsVersion } from '../../packages/aocjs/package.json'
+import { version as aockitVersion } from '../../packages/cli/package.json'
 
 export default defineConfig({
   title: 'aockit',
@@ -14,20 +16,43 @@ export default defineConfig({
     },
     sidebar: [
       {
-        text: 'Getting Started',
-        link: '/getting-started'
+        text: `aockit@${aockitVersion}`,
+        base: '/kit/',
+        collapsed: false,
+        rel: '/kit/',
+        items: [
+          {
+            text: 'Getting Started',
+            link: '/getting-started'
+          },
+          {
+            text: 'TypeScript Support',
+            link: '/typescript'
+          },
+          {
+            text: 'Other Language Support',
+            link: '/language-support'
+          },
+          {
+            text: 'Templates',
+            link: '/templates'
+          },
+          {
+            text: 'Tasks API',
+            link: '/tasks'
+          }
+        ]
       },
       {
-        text: 'JavaScript Support',
-        link: '/javascript'
-      },
-      {
-        text: 'Language Support',
-        link: '/language-support'
-      },
-      {
-        text: 'Templates',
-        link: '/templates'
+        text: `aocjs@${aocjsVersion}`,
+        base: '/aocjs/',
+        collapsed: false,
+        items: [
+          {
+            text: 'Getting Started',
+            link: '/getting-started'
+          }
+        ]
       }
     ],
     socialLinks: [{ icon: 'github', link: 'https://github.com/aockit/aockit' }]
