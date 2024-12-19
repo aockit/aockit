@@ -1,6 +1,6 @@
 {
   "name": "@aockit/core",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Core package for aockit.",
   "repository": {
     "type": "git",
