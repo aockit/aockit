@@ -45,6 +45,7 @@ async function createWatcher(
   )
 
   const runner = await _runner(dir)
+  let unregisterTasks: (() => void) | undefined
 
   const _watcher = await watcher.subscribe(
     dir,
@@ -84,7 +85,7 @@ async function createWatcher(
         color: 'red',
         handler: async () => {
           log.log('Exiting.')
-          unregisterTasks()
+          unregisterTasks?.()
           _watcher.unsubscribe()
           await runner.dispose?.()
           process.exit(0)
@@ -180,10 +181,10 @@ async function createWatcher(
   })
   log.log('Started server, listening for changes...')
 
-  const unregisterTasks = registerTasks(config.tasks)
+  unregisterTasks = registerTasks(config.tasks, Number(year), Number(day))
 
   return () => {
-    unregisterTasks()
+    unregisterTasks?.()
     _watcher.unsubscribe()
     runner.dispose?.()
   }
@@ -225,6 +226,7 @@ export async function createDevContext(ctx: Context): Promise<void> {
     const runner = ctx.data.days[Number(day)].config!.runner!.trim()
     await createWatcher(year, day, dir, () => createExecContext(dir, runner))
   } else {
-    log.crash(`[dev:watcher:error] Runner '${runner}' not found`)
+    log.error(`[dev:watcher:error] Runner '${runner}' not found`)
+    process.exit(1)
   }
 }

@@ -14,21 +14,15 @@ class FileOperationError extends Error {
 }
 
 export const data = {
-  /**
-   * Load configuration from .aockit.json
-   * @param year - The year directory to load config from
-   * @returns Parsed configuration object
-   * @throws {FileOperationError} If file reading or parsing fails
-   */
   load: async (year: string): Promise<Data> => {
     try {
       const filePath = join(year, '.aockit.json')
       const rawData = await fsp.readFile(filePath, { encoding: 'utf-8' })
 
       try {
-        const parsedConfigData = JSON.parse(rawData)
+        const parsedData = JSON.parse(rawData)
 
-        return parsedConfigData as Data
+        return parsedData as Data
       } catch (parseError) {
         throw new FileOperationError('Invalid JSON configuration', parseError)
       }
@@ -40,20 +34,14 @@ export const data = {
     }
   },
 
-  /**
-   * Save configuration to .aockit.json
-   * @param year - The year directory to save config to
-   * @param _config - Configuration object to save
-   * @throws {FileOperationError} If file writing fails
-   */
-  save: async (year: string, _config: Data): Promise<void> => {
+  save: async (year: string, _data: Data): Promise<void> => {
     try {
       const filePath = join(year, '.aockit.json')
-      const data = JSON.stringify(_config, null, 2)
+      const data = JSON.stringify(_data, null, 2)
 
       await fsp.writeFile(filePath, data, {
         encoding: 'utf-8',
-        flag: 'w' // Explicitly overwrite
+        flag: 'w'
       })
     } catch (error) {
       throw new FileOperationError(

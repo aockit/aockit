@@ -18,16 +18,12 @@ export async function createWorkerContext(
   const inputFile = resolve(dir, 'input.txt')
 
   function createWorker(task?: 'test' | 'bench'): void {
-    if (worker) {
-      deleteWorker()
-    }
+    if (worker) deleteWorker()
 
     try {
       const argv = [`--input=${inputFile}`]
       // Add --bench or --test flag if either is true or add nothing
       if (task) argv.push(`--${task}`)
-
-      log.log(argv.toString())
 
       worker = new Worker(resolve(outfile), {
         execArgv: ['--enable-source-maps', '--'],

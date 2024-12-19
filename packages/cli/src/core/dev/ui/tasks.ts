@@ -18,7 +18,7 @@ export interface Task {
   handler: (context: TaskHandlerContext) => void | Promise<void>
 }
 
-export function registerTasks(options: Task[]) {
+export function registerTasks(options: Task[], year: number, day: number) {
   function formatInstructions() {
     const instructions = options
       .filter(({ disabled }) => !disabled)
@@ -64,8 +64,8 @@ export function registerTasks(options: Task[]) {
       if (keys.includes(char)) {
         try {
           const context: TaskHandlerContext = {
-            year: new Date().getFullYear(),
-            day: new Date().getDate(),
+            year,
+            day,
             x
           }
           await handler(context)
